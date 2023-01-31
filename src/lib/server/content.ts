@@ -87,11 +87,14 @@ export async function getCompiledContentList(contentDir: string) {
 export async function getBlogListItems() {
     const key = 'blog:list:compiled'
     const cached = await redis.get(key)
+
+    if (cached) {
+        return JSON.parse(cached)
+    }
     
 
     const postList = await getCompiledContentList('blog')
     const filteredPostList = postList.filter(post => !post.frontMatter.draft && !post.frontMatter.unpublished)
-   
     const posts = filteredPostList.sort((a, z) => {
         const aDate = new Date(a.frontMatter.published)
         const zDate = new Date(z.frontMatter.published)
