@@ -7,8 +7,8 @@
 	<div class="w-full">
 		<div class="mx-auto px-6">
 			<div class="text-center">
-				<p class="mt-1 font-semibold tracking-tight text-5xl">Thoughts, Ideas, & Lessons</p>
-				<p class="mx-auto max-w-lg text-xl text-gray-100">
+				<p class="mt-1 font-semibold text-4xl">Writing</p>
+				<p class="mx-auto max-w-lg text-gray-100 pt-2">
 					<em> "You can make anything by writing" </em>
 					-C.S. Lewis
 				</p>

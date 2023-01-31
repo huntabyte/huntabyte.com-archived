@@ -7,16 +7,6 @@ const config = {
 			fontFamily: {
 				sans: ["Heebo", "sans-serif"],
 			},
-			fontSize: {
-				xs: "0.781rem",
-				sm: "0.9rem",
-				base: ["1.125rem", "31.5px"],
-				xl: "1.35rem",
-				"2xl": "1.62rem",
-				"3xl": "1.944rem",
-				"4xl": "2.333rem",
-				"5xl": "2.799rem",
-			},
 			colors: {
 				gray: {
 					50: "#FAFAFB",
@@ -54,7 +44,6 @@ const config = {
 					800: "#ab093e",
 					900: "#8e0d37",
 				},
-
 				accent: {
 					50: "#fefbe8",
 					100: "#fff7c2",

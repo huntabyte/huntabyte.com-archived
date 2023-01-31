@@ -1,7 +1,8 @@
+import type readingTime from "reading-time"
+
 export type FrontMatter = {
 	title: string
 	description: string
-	slug: string
 	published: string
 }
 
@@ -10,7 +11,8 @@ export type GitHubFile = {
 	content: string
 }
 
-export type MarkdownContent = {
+export type PageContent = {
 	content: string
 	frontMatter: FrontMatter
+	readTime?: ReturnType<typeof readingTime>
 }

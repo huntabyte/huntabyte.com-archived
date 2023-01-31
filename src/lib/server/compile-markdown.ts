@@ -5,6 +5,7 @@ import fromMarkdownToHtml from "remark-rehype"
 import parseHtmlAndMarkdown from "rehype-raw"
 import toHtml from "rehype-stringify"
 import matter from "gray-matter"
+import readingTime from "reading-time"
 
 // plugins
 import remarkGfm from "remark-gfm"
@@ -14,7 +15,7 @@ import remarkSmartyPants from "remark-smartypants"
 import rehypeCodeTitles from "rehype-code-titles"
 import rehypePrism from "rehype-prism-plus"
 
-import type { FrontMatter, MarkdownContent } from "$lib/types"
+import type { FrontMatter, PageContent } from "$lib/types"
 
 // TODO: Add link to source - need to think about S3, CF, or Cloudinary for this.
 function searchAndReplace(content: string): string {
@@ -53,10 +54,12 @@ function searchAndReplace(content: string): string {
 		})
 }
 
-export async function markdownToHTML(
+export async function compileMarkdown(
 	markdown: string,
-): Promise<MarkdownContent> {
+	slug: string,
+): Promise<PageContent> {
 	const { content, data } = matter(markdown)
+	data.slug = slug
 
 	const result = await unified()
 		.use(fromMarkdown)
@@ -68,10 +71,12 @@ export async function markdownToHTML(
 		.use(toHtml)
 		.process(searchAndReplace(content))
 
-	const processedMarkdown = result.value
+	const compiledContent = result.value as string
+	const readTime = readingTime(compiledContent)
 
 	return {
-		content: processedMarkdown as string,
+		content: compiledContent,
 		frontMatter: data as FrontMatter,
+		readTime,
 	}
 }

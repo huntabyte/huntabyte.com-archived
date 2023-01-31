@@ -52,36 +52,34 @@ async function downloadFirstMdFile(
  * Example: content/articles/first-article/index.md => articles/first-article/index.md
  * Example: content/snippets/sample-snippet.md => snippets/sample-snippet.md
  */
-async function downloadMdFile(
-	relativePath: string,
-): Promise<{ entry: string; files: Array<GitHubFile> }> {
-	const mdFile = `content/${relativePath}`
+// export async function downloadMdFile(
+// 	relativePath: string,
+// ): Promise<{ entry: string; files: Array<GitHubFile> }> {
+// 	const mdFile = `content/${relativePath}`
 
-	const parentDir = nodePath.dirname(mdFile)
-	const dirList = await downloadDirList(parentDir)
+// 	const parentDir = nodePath.dirname(mdFile)
+// 	const dirList = await downloadDirList(parentDir)
 
-	const basename = nodePath.basename(mdFile)
-	const mdFileWithoutExt = nodePath.parse(mdFile).name
-	const potentials = dirList.filter(({ name }) => name.startsWith(basename))
-	const exactMatch = potentials.find(
-		({ name }) => nodePath.parse(name).name === mdFileWithoutExt,
-	)
+// 	const basename = nodePath.basename(mdFile)
+// 	const mdFileWithoutExt = nodePath.parse(mdFile).name
+// 	const potentials = dirList.filter(({ name }) => name.startsWith(basename))
+// 	const exactMatch = potentials.find(
+// 		({ name }) => nodePath.parse(name).name === mdFileWithoutExt,
+// 	)
 
-	const content = await downloadFirstMdFile(
-		exactMatch ? [exactMatch] : potentials,
-	)
+// 	const content = await downloadFirstMdFile(
+// 		exactMatch ? [exactMatch] : potentials,
+// 	)
 
-	let files: Array<GitHubFile> = []
-	let entry = mdFile
-	if (content) {
-		entry = mdFile.endsWith(".md") ? mdFile : `${mdFile}.md`
-		files = [{ path: mdFile, content }]
-	}
-	console.log("github:downloadMdFile:entry", entry)
-	console.log("github:downloadMdFile:files", files)
+// 	let files: Array<GitHubFile> = []
+// 	let entry = mdFile
+// 	if (content) {
+// 		entry = mdFile.endsWith(".md") ? mdFile : `${mdFile}.md`
+// 		files = [{ path: mdFile, content }]
+// 	}
 
-	return { entry, files }
-}
+// 	return { entry, files }
+// }
 
 /**
  *
@@ -90,7 +88,9 @@ async function downloadMdFile(
  * @returns an array of GitHubFile objects
  *
  */
-async function downloadDirectory(dir: string): Promise<Array<GitHubFile>> {
+export async function downloadDirectory(
+	dir: string,
+): Promise<Array<GitHubFile>> {
 	const dirList = await downloadDirList(dir)
 	const result = await Promise.all(
 		dirList.map(async ({ path: fileDir, type, sha }) => {
@@ -115,7 +115,7 @@ async function downloadDirectory(dir: string): Promise<Array<GitHubFile>> {
  * @param sha the hash for the file (retrieved via `downloadDirList`)
  * @returns a promise that resolves to a string of the contents of the file
  */
-async function downloadFileBySha(sha: string) {
+export async function downloadFileBySha(sha: string) {
 	const { data } = await octokit.git.getBlob({
 		owner: "huntabyte",
 		repo: "huntabyte.com",
@@ -132,8 +132,8 @@ async function downloadFileBySha(sha: string) {
  * Example: content/articles/first-article/index.md => articles/first-article/index.md
  * Example: content/snippets/sample-snippet.md => snippets/sample-snippet.md
  */
-async function downloadMarkdownContent(relativePath: string) {
-	const path = `content/${relativePath}`
+export async function downloadMdFile(relativePath: string) {
+	const path = `content/${relativePath}.md`
 	const { data } = await octokit.repos.getContent({
 		owner: "huntabyte",
 		repo: "huntabyte.com",
@@ -147,7 +147,6 @@ async function downloadMarkdownContent(relativePath: string) {
 		return content
 	}
 
-	console.error(data)
 	throw new Error(
 		`Tried to get ${path} but got back something unexpected. 'Content' or 'Encoding' property missing.`,
 	)
@@ -158,7 +157,7 @@ async function downloadMarkdownContent(relativePath: string) {
  * @param path the full path to list
  * @returns a promise that resolves to a file ListItem of the files/directories in the given directory (not recursive)
  */
-async function downloadDirList(path: string) {
+export async function downloadDirList(path: string) {
 	const res = await octokit.repos.getContent({
 		owner: "huntabyte",
 		repo: "huntabyte.com",
@@ -177,5 +176,3 @@ async function downloadDirList(path: string) {
 
 	return data
 }
-
-export { downloadMdFile, downloadDirList, downloadMarkdownContent }
