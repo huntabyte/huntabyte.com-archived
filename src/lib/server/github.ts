@@ -58,9 +58,7 @@ async function downloadMdFile(
 	const mdFile = `content/${relativePath}`
 
 	const parentDir = nodePath.dirname(mdFile)
-	console.log(parentDir)
 	const dirList = await downloadDirList(parentDir)
-	console.log(dirList)
 
 	const basename = nodePath.basename(mdFile)
 	const mdFileWithoutExt = nodePath.parse(mdFile).name
@@ -127,18 +125,26 @@ async function downloadFileBySha(sha: string) {
 	return Buffer.from(data.content, encoding).toString()
 }
 
-async function downloadFile(path: string) {
+/**
+ *
+ * @param relativePath - Path relative to the content directory.
+ * Example: content/articles/first-article.md => articles/first-article.md
+ * Example: content/articles/first-article/index.md => articles/first-article/index.md
+ * Example: content/snippets/sample-snippet.md => snippets/sample-snippet.md
+ */
+async function downloadMarkdownContent(relativePath: string) {
+	const path = `content/${relativePath}`
 	const { data } = await octokit.repos.getContent({
 		owner: "huntabyte",
 		repo: "huntabyte.com",
 		path,
 		ref,
 	})
-	console.log("github:downloadFile:data", data)
 
 	if ("content" in data && "encoding" in data) {
 		const encoding = data.encoding as Parameters<typeof Buffer.from>[1]
-		return Buffer.from(data.content, encoding).toString()
+		const content = Buffer.from(data.content, encoding).toString()
+		return content
 	}
 
 	console.error(data)
@@ -172,4 +178,4 @@ async function downloadDirList(path: string) {
 	return data
 }
 
-export { downloadMdFile, downloadDirList, downloadFile }
+export { downloadMdFile, downloadDirList, downloadMarkdownContent }

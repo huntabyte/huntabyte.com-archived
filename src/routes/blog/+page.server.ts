@@ -1,6 +1,7 @@
-import { downloadMdFile } from "$lib/server/github"
+import { downloadMarkdownContent } from "$lib/server/github"
 import type { PageServerLoad } from "./$types"
 
 export const load: PageServerLoad = async () => {
-	await downloadMdFile("blog/first-article.md")
+	const data = await downloadMarkdownContent("blog/first-article.md")
+	console.log(data)
 }
