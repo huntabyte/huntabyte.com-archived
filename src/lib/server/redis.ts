@@ -1,6 +1,6 @@
-import { Redis } from "ioredis"
+import { createClient } from "redis"
 import { REDIS_URI } from "$env/static/private"
 
-const redis = new Redis(REDIS_URI)
+const redis = createClient({ url: REDIS_URI })
 
 export { redis }

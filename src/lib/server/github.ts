@@ -58,7 +58,9 @@ async function downloadMdFile(
 	const mdFile = `content/${relativePath}`
 
 	const parentDir = nodePath.dirname(mdFile)
+	console.log(parentDir)
 	const dirList = await downloadDirList(parentDir)
+	console.log(dirList)
 
 	const basename = nodePath.basename(mdFile)
 	const mdFileWithoutExt = nodePath.parse(mdFile).name

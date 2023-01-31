@@ -1,4 +1,6 @@
 import { redis } from "$lib/server/redis"
+import { cache } from "$lib/server/cache"
+import { cachified } from "cachified"
 import { downloadMdFile } from "$lib/server/github"
 
 async function getMarkdownPage({
@@ -7,5 +9,9 @@ async function getMarkdownPage({
 }: { contentDir: string; slug: string }) {
 	const key = `md-page:${contentDir}:${slug}:compiled`
 
-	const cached = await redis.get(key)
+	const content = await cachified({
+		cache,
+		key,
+		getFreshValue: async () => {},
+	})
 }

@@ -43,8 +43,9 @@
 	"dependencies": {
 		"@octokit/plugin-throttling": "^5.0.1",
 		"@octokit/rest": "^19.0.7",
+		"cachified": "^3.1.0",
 		"gray-matter": "^4.0.3",
-		"ioredis": "^5.3.0",
+		"redis": "^4.6.4",
 		"rehype-autolink-headings": "^6.1.1",
 		"rehype-code-titles": "^1.1.0",
 		"rehype-prism-plus": "^1.5.0",
