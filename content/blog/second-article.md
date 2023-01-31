@@ -2,7 +2,8 @@
 title: Second Article
 description: A simple description for my second article on my blog.
 publishedAt: 2023-01-27
-draft: true
+draft: false
+unpublished: false
 ---
 
 # This is an H1

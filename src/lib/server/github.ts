@@ -1,7 +1,6 @@
 // Most of the heavy lifting here was done by Kent C Dodds - https://github.com/kentcdodds/kentcdodds.com
 // Thanks, Kent! Follow him on Twitter @kentcdodds.
 
-import nodePath from "path"
 import { GH_TOKEN } from "$env/static/private"
 import { Octokit as createOctokit } from "@octokit/rest"
 import { throttling } from "@octokit/plugin-throttling"
@@ -47,42 +46,6 @@ async function downloadFirstMdFile(
 
 /**
  *
- * @param relativePath - Path relative to the content directory.
- * Example: content/articles/first-article.md => articles/first-article.md
- * Example: content/articles/first-article/index.md => articles/first-article/index.md
- * Example: content/snippets/sample-snippet.md => snippets/sample-snippet.md
- */
-// export async function downloadMdFile(
-// 	relativePath: string,
-// ): Promise<{ entry: string; files: Array<GitHubFile> }> {
-// 	const mdFile = `content/${relativePath}`
-
-// 	const parentDir = nodePath.dirname(mdFile)
-// 	const dirList = await downloadDirList(parentDir)
-
-// 	const basename = nodePath.basename(mdFile)
-// 	const mdFileWithoutExt = nodePath.parse(mdFile).name
-// 	const potentials = dirList.filter(({ name }) => name.startsWith(basename))
-// 	const exactMatch = potentials.find(
-// 		({ name }) => nodePath.parse(name).name === mdFileWithoutExt,
-// 	)
-
-// 	const content = await downloadFirstMdFile(
-// 		exactMatch ? [exactMatch] : potentials,
-// 	)
-
-// 	let files: Array<GitHubFile> = []
-// 	let entry = mdFile
-// 	if (content) {
-// 		entry = mdFile.endsWith(".md") ? mdFile : `${mdFile}.md`
-// 		files = [{ path: mdFile, content }]
-// 	}
-
-// 	return { entry, files }
-// }
-
-/**
- *
  * @param dir directory to download
  * Recursively downloads all content at the given directory.
  * @returns an array of GitHubFile objects
@@ -91,7 +54,7 @@ async function downloadFirstMdFile(
 export async function downloadDirectory(
 	dir: string,
 ): Promise<Array<GitHubFile>> {
-	const dirList = await downloadDirList(dir)
+	const dirList = await downloadContentList(dir)
 	const result = await Promise.all(
 		dirList.map(async ({ path: fileDir, type, sha }) => {
 			switch (type) {
@@ -157,7 +120,7 @@ export async function downloadMdFile(relativePath: string) {
  * @param path the full path to list
  * @returns a promise that resolves to a file ListItem of the files/directories in the given directory (not recursive)
  */
-export async function downloadDirList(path: string) {
+export async function downloadContentList(path: string) {
 	const res = await octokit.repos.getContent({
 		owner: "huntabyte",
 		repo: "huntabyte.com",
@@ -166,7 +129,6 @@ export async function downloadDirList(path: string) {
 	})
 
 	const data = res.data
-	console.log("github:downloadDirList:data", data)
 
 	if (!Array.isArray(data)) {
 		throw new Error(

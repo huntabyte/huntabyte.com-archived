@@ -2,7 +2,8 @@
 title: First Article
 description: A simple description for my first article on my blog.
 publishedAt: 2023-01-25
-draft: true
+draft: false
+unpublished: false
 ---
 
 # This is an H1

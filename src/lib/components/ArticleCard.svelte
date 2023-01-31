@@ -1,9 +1,14 @@
 <script lang="ts">
+	import type { PageContent } from '$lib/types'
 	import { shortDate } from '$lib/utils'
+
+	export let post: PageContent
+
+	$: ({ frontMatter, content } = post)
 </script>
 
 <a href="/blog/" class="group flex flex-col w-full max-w-2xl">
-	<h2 class="text-xl font-semibold">This is my title</h2>
+	<h2 class="text-xl font-semibold">{frontMatter.title}</h2>
 	<p class="text-gray-300 mt-1">
 		Lorem ipsum dolor sit, amet consectetur adipisicing elit. Sint ullam nemo culpa, aut pariatur
 		tenetur obcaecati fugiat laboriosam quos alias esse assumenda corrupti labore vero excepturi.

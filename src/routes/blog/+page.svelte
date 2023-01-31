@@ -1,6 +1,11 @@
 <script lang="ts">
 	import ArticleCard from '$lib/components/ArticleCard.svelte'
 	import type { PageData } from './$types'
+
+	export let data: PageData
+	$: ({ posts } = data)
+
+	console.log(posts)
 </script>
 
 <div class="flex flex-col mx-auto items-center space-y-12 max-w-2xl">
@@ -16,8 +21,8 @@
 		</div>
 	</div>
 	<div class="flex flex-col space-y-8">
-		<ArticleCard />
-		<ArticleCard />
-		<ArticleCard />
+		{#each posts as post}
+			<ArticleCard {post} />
+		{/each}
 	</div>
 </div>
