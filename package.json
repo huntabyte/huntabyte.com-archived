@@ -19,6 +19,7 @@
 		"@sveltejs/kit": "^1.0.0",
 		"@tailwindcss/forms": "^0.5.3",
 		"@tailwindcss/typography": "^0.5.9",
+		"@types/better-sqlite3": "^7.6.3",
 		"@typescript-eslint/eslint-plugin": "^5.45.0",
 		"@typescript-eslint/parser": "^5.45.0",
 		"autoprefixer": "^10.4.7",
@@ -43,6 +44,7 @@
 	"dependencies": {
 		"@octokit/plugin-throttling": "^5.0.1",
 		"@octokit/rest": "^19.0.7",
+		"better-sqlite3": "^8.0.1",
 		"cachified": "^3.1.0",
 		"gray-matter": "^4.0.3",
 		"ioredis": "^5.3.0",
