@@ -32,4 +32,6 @@ WORKDIR /app/
 COPY --from=builder --chown=node:node /app/node_modules /app/node_modules
 COPY --from=builder --chown=node:node /app/build /app/build
 COPY --chown=node:node package.json pnpm-lock.yaml ./
+RUN mkdir -p /data ${DB_DIR}
+
 CMD ["node", "build"]
