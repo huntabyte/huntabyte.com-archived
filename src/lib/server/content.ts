@@ -39,11 +39,7 @@ export async function getRawPageContent(
 }
 
 export async function getCompiledPageContent(
-	{
-		contentDir,
-		slug,
-		markdown,
-	}: { contentDir: string; slug: string; markdown: string },
+	{ contentDir, slug }: { contentDir: string; slug: string },
 	options: CachifiedOptions = defaultCacheOptions,
 ) {
 	const key = `${contentDir}:${slug}:compiled`
@@ -137,7 +133,6 @@ export async function getCompiledContentList(
 		rawContentList.map((pageContent) =>
 			getCompiledPageContent({
 				contentDir,
-				markdown: pageContent.markdown,
 				slug: pageContent.slug,
 			}),
 		),
