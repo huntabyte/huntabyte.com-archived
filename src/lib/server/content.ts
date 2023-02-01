@@ -66,6 +66,8 @@ export async function getCompiledPageContent(
 				)
 				return Promise.reject(err)
 			})
+			// add slug to frontmatter for linking, etc.
+			compiledPageContent.frontMatter.slug = slug
 			return compiledPageContent
 		},
 	})
@@ -73,6 +75,8 @@ export async function getCompiledPageContent(
 		// if page doesn't exist, remove from cache
 		void cache.delete(key)
 	}
+
+	pageContent.frontMatter.slug = slug
 
 	return pageContent
 }
@@ -160,8 +164,8 @@ export async function getBlogListItems(
 			)
 
 			postList = postList.sort((a, z) => {
-				const aDate = new Date(a.frontMatter.published)
-				const zDate = new Date(z.frontMatter.published)
+				const aDate = new Date(a.frontMatter.date)
+				const zDate = new Date(z.frontMatter.date)
 				return zDate.getTime() - aDate.getTime()
 			})
 

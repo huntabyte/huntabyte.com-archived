@@ -1,7 +1,9 @@
 ---
 title: Third Article
-description: A simple description for my Third article on my blog.
-publishedAt: 2023-01-29
+description: A simple description for my third ever article on my blog. Join me as we explore the world of blogging.
+date: 2023-01-25
+updated: 2023-01-25
+
 draft: false
 unpublished: false
 ---

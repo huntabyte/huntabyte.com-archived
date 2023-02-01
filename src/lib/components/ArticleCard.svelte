@@ -4,10 +4,10 @@
 
 	export let post: PageContent
 
-	$: ({ frontMatter, content } = post)
+	$: ({ frontMatter } = post)
 </script>
 
-<a href="/blog/" class="group flex flex-col w-full max-w-2xl">
+<a href="/blog/{frontMatter.slug}" class="group flex flex-col w-full max-w-2xl">
 	<h2 class="text-xl font-semibold">{frontMatter.title}</h2>
 	<p class="text-gray-300 mt-1">
 		Lorem ipsum dolor sit, amet consectetur adipisicing elit. Sint ullam nemo culpa, aut pariatur

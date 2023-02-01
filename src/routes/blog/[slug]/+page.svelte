@@ -18,12 +18,12 @@
 		<div class="flex items-center justify-between">
 			<div class="flex items-center gap-2 text-sm pt-2">
 				<span>
-					{shortDate(new Date(pageContent.frontMatter.publishedAt))}
+					{shortDate(new Date(pageContent.frontMatter.date))}
 				</span>
 			</div>
 			<div class="flex gap-2">
 				<span />
-				<span> {pageContent.readTime.text} </span>
+				<span> {pageContent.readTime?.text} </span>
 			</div>
 		</div>
 	</div>

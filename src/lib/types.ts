@@ -3,9 +3,11 @@ import type readingTime from "reading-time"
 export type FrontMatter = {
 	title: string
 	description: string
-	published: string
+	date: string
+	updated: string
 	draft: boolean
 	unpublished: boolean
+	slug: string
 }
 
 export type GitHubFile = {

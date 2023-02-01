@@ -1,11 +1,12 @@
 ---
 title: Second Article
-description: A simple description for my second article on my blog.
-publishedAt: 2023-01-27
+description: A simple description for my second ever article on my blog. Join me as we explore the world of blogging.
+date: 2023-01-25
+updated: 2023-01-25
+
 draft: false
 unpublished: false
 ---
-
 # This is an H1
 ## This is an H2
 ### This is an H3
