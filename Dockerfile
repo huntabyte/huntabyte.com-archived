@@ -25,9 +25,6 @@ ENV CACHE_DB_PATH="${FLY_LITEFS_DIR}/${CACHE_DB_FILENAME}"
 ENV PORT="8080"
 ENV NODE_ENV="production"
 
-# Access SQLite CLI 
-RUN echo "#!/bin/sh\nset -x\nsqlite3 \$CACHE_DB_PATH" > /usr/local/bin/cache-db-cli && chmod +x /usr/local/bin/cache-db-cli
-
 WORKDIR /app/
 
 COPY --from=builder --chown=node:node /app/node_modules /app/node_modules
