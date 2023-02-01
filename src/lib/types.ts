@@ -10,11 +10,6 @@ export type FrontMatter = {
 	slug: string
 }
 
-export type GitHubFile = {
-	path: string
-	content: string
-}
-
 export type PageContent = {
 	content: string
 	frontMatter: FrontMatter

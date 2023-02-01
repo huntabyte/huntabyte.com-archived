@@ -1,10 +1,7 @@
-// Most of the heavy lifting here was done by Kent C Dodds - https://github.com/kentcdodds/kentcdodds.com
-// Thanks, Kent! Follow him on Twitter @kentcdodds.
-
+// Interacting with the GitHub API in this manner was inspired by @kentcdodds
 import { GH_TOKEN } from "$env/static/private"
 import { Octokit as createOctokit } from "@octokit/rest"
 import { throttling } from "@octokit/plugin-throttling"
-import type { GitHubFile } from "$lib/types"
 
 const ref = "main"
 
@@ -34,65 +31,10 @@ const octokit = new Octokit({
 	},
 })
 
-async function getFirstMarkdownItem(
-	list: Array<{ name: string; type: string; path: string; sha: string }>,
-) {
-	const filesOnly = list.filter(({ type }) => type === "file")
-	for (const extension of [".md"]) {
-		const file = filesOnly.find(({ name }) => name.endsWith(extension))
-		if (file) return downloadFileBySha(file.sha)
-	}
-}
-
-/**
- *
- * @param dir directory to download
- * Recursively downloads all content at the given directory.
- * @returns an array of GitHubFile objects
- *
- */
-export async function getMarkdownDirectory(
-	dir: string,
-): Promise<Array<GitHubFile>> {
-	const dirList = await getMarkdownContentList(dir)
-	const result = await Promise.all(
-		dirList.map(async ({ path: fileDir, type, sha }) => {
-			switch (type) {
-				case "file":
-					const content = await downloadFileBySha(sha)
-					return { path: fileDir, content }
-				case "dir":
-					return getMarkdownDirectory(fileDir)
-				default: {
-					throw new Error(`Unexpected file type: ${type}`)
-				}
-			}
-		}),
-	)
-
-	return result.flat()
-}
-
-/**
- *
- * @param sha the hash for the file (retrieved via `downloadDirList`)
- * @returns a promise that resolves to a string of the contents of the file
- */
-export async function downloadFileBySha(sha: string) {
-	const { data } = await octokit.git.getBlob({
-		owner: "huntabyte",
-		repo: "huntabyte.com",
-		file_sha: sha,
-	})
-	const encoding = data.encoding as Parameters<typeof Buffer.from>[1]
-	return Buffer.from(data.content, encoding).toString()
-}
-
 /**
  *
  * @param relativePath - Path relative to the content directory.
  * Example: content/articles/first-article.md => articles/first-article.md
- * Example: content/articles/first-article/index.md => articles/first-article/index.md
  * Example: content/snippets/sample-snippet.md => snippets/sample-snippet.md
  */
 export async function getMarkdownContent(relativePath: string) {
@@ -117,8 +59,8 @@ export async function getMarkdownContent(relativePath: string) {
 
 /**
  *
- * @param path the full path to list
- * @returns a promise that resolves to a file ListItem of the files/directories in the given directory (not recursive)
+ * @param path the full path to content directory
+ * @returns a promise that resolves to a list of files and directories at the provided path
  */
 export async function getMarkdownContentList(path: string) {
 	const res = await octokit.repos.getContent({
