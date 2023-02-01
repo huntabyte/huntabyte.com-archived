@@ -11,7 +11,7 @@ RUN pnpm install --frozen-lockfile --prod
 
 COPY . .
 
-RUN pnpm run build
+RUN pnpm build
 
 USER node:node
 
