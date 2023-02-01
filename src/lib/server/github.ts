@@ -34,7 +34,7 @@ const octokit = new Octokit({
 	},
 })
 
-async function downloadFirstMdFile(
+async function getFirstMarkdownItem(
 	list: Array<{ name: string; type: string; path: string; sha: string }>,
 ) {
 	const filesOnly = list.filter(({ type }) => type === "file")
@@ -51,10 +51,10 @@ async function downloadFirstMdFile(
  * @returns an array of GitHubFile objects
  *
  */
-export async function downloadDirectory(
+export async function getMarkdownDirectory(
 	dir: string,
 ): Promise<Array<GitHubFile>> {
-	const dirList = await downloadContentList(dir)
+	const dirList = await getMarkdownContentList(dir)
 	const result = await Promise.all(
 		dirList.map(async ({ path: fileDir, type, sha }) => {
 			switch (type) {
@@ -62,7 +62,7 @@ export async function downloadDirectory(
 					const content = await downloadFileBySha(sha)
 					return { path: fileDir, content }
 				case "dir":
-					return downloadDirectory(fileDir)
+					return getMarkdownDirectory(fileDir)
 				default: {
 					throw new Error(`Unexpected file type: ${type}`)
 				}
@@ -95,7 +95,7 @@ export async function downloadFileBySha(sha: string) {
  * Example: content/articles/first-article/index.md => articles/first-article/index.md
  * Example: content/snippets/sample-snippet.md => snippets/sample-snippet.md
  */
-export async function downloadMdFile(relativePath: string) {
+export async function getMarkdownContent(relativePath: string) {
 	const path = `content/${relativePath}.md`
 	const { data } = await octokit.repos.getContent({
 		owner: "huntabyte",
@@ -120,7 +120,7 @@ export async function downloadMdFile(relativePath: string) {
  * @param path the full path to list
  * @returns a promise that resolves to a file ListItem of the files/directories in the given directory (not recursive)
  */
-export async function downloadContentList(path: string) {
+export async function getMarkdownContentList(path: string) {
 	const res = await octokit.repos.getContent({
 		owner: "huntabyte",
 		repo: "huntabyte.com",

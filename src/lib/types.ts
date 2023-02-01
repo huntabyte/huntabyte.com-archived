@@ -4,8 +4,8 @@ export type FrontMatter = {
 	title: string
 	description: string
 	published: string
-    draft: boolean
-    unpublished: boolean
+	draft: boolean
+	unpublished: boolean
 }
 
 export type GitHubFile = {

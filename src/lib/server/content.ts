@@ -1,6 +1,9 @@
-import { downloadContentList, downloadMdFile } from "$lib/server/github"
-import { redis } from "$lib/server/redis"
+import { getMarkdownContentList, getMarkdownContent } from "$lib/server/github"
+import { cache } from "$lib/server/cache"
 import { compileMarkdown } from "$lib/server/compile-markdown"
+import { cachified } from "cachified"
+import { typedBoolean } from "$lib/utils"
+import type { PageContent } from "$lib/types"
 
 type CachifiedOptions = {
 	ttl?: number
@@ -8,41 +11,74 @@ type CachifiedOptions = {
 	staleWhileRevalidate?: number
 }
 
-export async function getContent(contentDir: string, slug: string) {
-	const key = `${contentDir}:${slug}:downloaded`
-
-	// check if the value is cached
-	const cached = await redis.get(key)
-	if (cached) {
-		return cached
-	}
-
-	// Value doesn't exist in cache or is expired, so download it
-	const downloaded = await downloadMdFile(`${contentDir}/${slug}`)
-
-	// Cache the value
-	redis.set(key, downloaded, "EX", defaultTTL)
-
-	return downloaded
+const defaultCacheOptions: CachifiedOptions = {
+	ttl: 1000 * 60 * 60 * 24 * 14,
+	staleWhileRevalidate: 1000 * 60 * 60 * 24 * 30,
+	forceFresh: false,
 }
 
-export async function getCompiledContent(contentDir: string, slug: string) {
-	const key = `${contentDir}:${slug}:compiled`
+export async function getRawPageContent(
+	{ contentDir, slug }: { contentDir: string; slug: string },
+	options: CachifiedOptions = defaultCacheOptions,
+) {
+	const key = `${contentDir}:${slug}:raw`
+	const { ttl, staleWhileRevalidate, forceFresh } = options
+	const rawPageContent = await cachified({
+		key,
+		cache,
+		ttl,
+		staleWhileRevalidate,
+		forceFresh,
+		checkValue: (value) => value !== null,
+		getFreshValue: async () => getMarkdownContent(`${contentDir}/${slug}`),
+	})
+	if (!rawPageContent) {
+		void cache.delete(key)
+	}
+	return rawPageContent
+}
 
-	// check if the value is cached
-	const cached = await redis.get(key)
-	if (cached) {
-		return JSON.parse(cached)
+export async function getCompiledPageContent(
+	{
+		contentDir,
+		slug,
+		markdown,
+	}: { contentDir: string; slug: string; markdown: string },
+	options: CachifiedOptions = defaultCacheOptions,
+) {
+	const key = `${contentDir}:${slug}:compiled`
+	const { ttl, staleWhileRevalidate, forceFresh } = options
+	const pageContent = await cachified({
+		key,
+		cache,
+		ttl,
+		staleWhileRevalidate,
+		forceFresh,
+		checkValue: (value) => value !== null,
+		getFreshValue: async () => {
+			const rawPageContent = await getRawPageContent(
+				{ contentDir, slug },
+				options,
+			)
+			const compiledPageContent = await compileMarkdown(
+				rawPageContent,
+				slug,
+			).catch((err) => {
+				console.error(
+					`Failed to get compiled page content for ${contentDir}/${slug}`,
+					err,
+				)
+				return Promise.reject(err)
+			})
+			return compiledPageContent
+		},
+	})
+	if (!pageContent) {
+		// if page doesn't exist, remove from cache
+		void cache.delete(key)
 	}
 
-	// Compiled value doesn't exist in cache or is expired, so download and compile it
-	const downloadedContent = await getContent(contentDir, slug)
-	const compiledContent = await compileMarkdown(downloadedContent, slug)
-
-	// Cache the compiled value only, the downloaded value is cached separately
-	redis.set(key, JSON.stringify(compiledContent), "EX", defaultTTL)
-
-	return compiledContent
+	return pageContent
 }
 
 /**
@@ -51,26 +87,30 @@ export async function getCompiledContent(contentDir: string, slug: string) {
  * Example: "blog" or "snippets"
  * @returns
  */
-export async function getContentList(contentDir: string) {
-	const key = `${contentDir}:list`
-	const fullPath = `content/${contentDir}`
-
-	// check if the value is cached
-	const cached = await redis.get(key)
-	if (cached) {
-		return JSON.parse(cached) as ContentListItem[]
-	}
-
-	const contentList = (await downloadContentList(fullPath)).map(
-		({ name, path }) => ({
-			name,
-			slug: path.replace(`${fullPath}/`, "").replace(/\.md$/, ""),
-		}),
-	)
-
-	redis.set(key, JSON.stringify(contentList), "EX", defaultTTL)
-
-	return contentList
+export async function getContentList(
+	contentDir: string,
+	options: CachifiedOptions = defaultCacheOptions,
+) {
+	const { ttl, forceFresh, staleWhileRevalidate } = options
+	const key = `${contentDir}:list:raw`
+	return cachified({
+		key,
+		cache,
+		ttl,
+		forceFresh,
+		staleWhileRevalidate,
+		checkValue: (value: unknown) => Array.isArray(value),
+		getFreshValue: async () => {
+			const fullContentDirPath = `content/${contentDir}`
+			const rawContentList = (
+				await getMarkdownContentList(fullContentDirPath)
+			).map(({ name, path }) => ({
+				name,
+				slug: path.replace(`${fullContentDirPath}/`, "").replace(/\.md$/, ""),
+			}))
+			return rawContentList
+		},
+	})
 }
 
 type ContentListItem = {
@@ -78,45 +118,64 @@ type ContentListItem = {
 	slug: string
 }
 
-export async function getCompiledContentList(contentDir: string) {
+export async function getCompiledContentList(
+	contentDir: string,
+	options: CachifiedOptions = defaultCacheOptions,
+) {
 	const contentList = await getContentList(contentDir)
 
-	const pageContentList = await Promise.all(
+	const rawContentList = await Promise.all(
 		contentList.map(async ({ slug }) => {
 			return {
-				markdown: await getContent(contentDir, slug),
+				markdown: await getRawPageContent({ contentDir, slug }),
 				slug,
 			}
 		}),
 	)
 
 	const compiledContentList = await Promise.all(
-		pageContentList.map((pageContent) =>
-			compileMarkdown(pageContent.markdown, pageContent.slug),
+		rawContentList.map((pageContent) =>
+			getCompiledPageContent({
+				contentDir,
+				markdown: pageContent.markdown,
+				slug: pageContent.slug,
+			}),
 		),
 	)
-	return compiledContentList
+	return compiledContentList.filter(typedBoolean)
 }
 
-export async function getBlogListItems() {
+export async function getBlogListItems(
+	options: CachifiedOptions = defaultCacheOptions,
+) {
+	const { ttl, staleWhileRevalidate, forceFresh } = options
 	const key = "blog:list:compiled"
-	const cached = await redis.get(key)
+	return cachified({
+		key,
+		cache,
+		ttl,
+		staleWhileRevalidate,
+		forceFresh,
+		getFreshValue: async () => {
+			let postList = await getCompiledContentList("blog", options).then(
+				(posts) =>
+					posts.filter(
+						(post) => !(post.frontMatter.draft || post.frontMatter.unpublished),
+					),
+			)
 
-	if (cached) {
-		return JSON.parse(cached)
-	}
+			postList = postList.sort((a, z) => {
+				const aDate = new Date(a.frontMatter.published)
+				const zDate = new Date(z.frontMatter.published)
+				return zDate.getTime() - aDate.getTime()
+			})
 
-	const postList = await getCompiledContentList("blog")
-	const filteredPostList = postList.filter(
-		(post) => !post.frontMatter.draft && !post.frontMatter.unpublished,
-	)
-	const posts = filteredPostList.sort((a, z) => {
-		const aDate = new Date(a.frontMatter.published)
-		const zDate = new Date(z.frontMatter.published)
-
-		return zDate.getTime() - aDate.getTime()
+			return postList.map(removeCodeFromListItem)
+		},
 	})
+}
 
-	redis.set(key, JSON.stringify(posts), "EX", defaultTTL)
-	return posts
+function removeCodeFromListItem(post: PageContent) {
+	const { content, ...listItem } = post
+	return listItem
 }
