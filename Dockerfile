@@ -11,7 +11,7 @@ RUN pnpm install --frozen-lockfile --prod
 
 COPY . .
 
-RUN pnpm build
+RUN pnpm run build
 
 FROM node:19-bullseye-slim
 USER node:node
