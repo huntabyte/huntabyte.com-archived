@@ -26,7 +26,7 @@ ENV PORT="8080"
 ENV NODE_ENV="production"
 
 # Access SQLite CLI 
-RUN echo "#!/bin/sh\nset -x\nsqlite3 \$CACHE_DATABASE_PATH" > /usr/local/bin/cache-db-cli && chmod +x /usr/local/bin/cache-db-cli
+RUN echo "#!/bin/sh\nset -x\nsqlite3 \$CACHE_DB_PATH" > /usr/local/bin/cache-db-cli && chmod +x /usr/local/bin/cache-db-cli
 
 WORKDIR /app/
 
