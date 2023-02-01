@@ -1,13 +1,6 @@
 FROM node:19-bullseye-slim as builder
 
-ENV FLY="true"
-ENV FLY_LITEFS_DIR="/litefs"
 
-ENV CACHE_DB_FILENAME="cache.sqlite"
-ENV CACHE_DB_PATH="${FLY_LITEFS_DIR}/${CACHE_DB_FILENAME}"
-
-ENV PORT="8080"
-ENV NODE_ENV="production"
 
 # Install necessary OS dependencies
 RUN apt-get update && apt-get install -y fuse openssl sqlite3 ca-certificates procps python3 make g++
@@ -21,6 +14,15 @@ RUN pnpm install --frozen-lockfile
 COPY . .
 
 RUN pnpm run build
+
+ENV FLY="true"
+ENV FLY_LITEFS_DIR="/litefs"
+
+ENV CACHE_DB_FILENAME="cache.sqlite"
+ENV CACHE_DB_PATH="${FLY_LITEFS_DIR}/${CACHE_DB_FILENAME}"
+
+ENV PORT="8080"
+ENV NODE_ENV="production"
 
 COPY --from=flyio/litefs:0.3 /usr/local/bin/litefs /usr/local/bin/litefs
 
