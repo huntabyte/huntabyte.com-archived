@@ -17,7 +17,7 @@ const defaultCacheOptions: CachifiedOptions = {
 	forceFresh: false,
 }
 
-export async function getRawPageContent(
+async function getRawPageContent(
 	{ contentDir, slug }: { contentDir: string; slug: string },
 	options: CachifiedOptions = defaultCacheOptions,
 ) {
@@ -87,7 +87,7 @@ export async function getCompiledPageContent(
  * Example: "blog" or "snippets"
  * @returns
  */
-export async function getContentList(
+async function getContentList(
 	contentDir: string,
 	options: CachifiedOptions = defaultCacheOptions,
 ) {
@@ -113,12 +113,7 @@ export async function getContentList(
 	})
 }
 
-type ContentListItem = {
-	name: string
-	slug: string
-}
-
-export async function getCompiledContentList(
+async function getCompiledContentList(
 	contentDir: string,
 	options: CachifiedOptions = defaultCacheOptions,
 ) {
@@ -127,7 +122,7 @@ export async function getCompiledContentList(
 	const rawContentList = await Promise.all(
 		contentList.map(async ({ slug }) => {
 			return {
-				markdown: await getRawPageContent({ contentDir, slug }),
+				markdown: await getRawPageContent({ contentDir, slug }, options),
 				slug,
 			}
 		}),

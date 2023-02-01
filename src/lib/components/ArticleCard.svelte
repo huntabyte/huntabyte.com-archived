@@ -1,8 +1,17 @@
 <script lang="ts">
 	import type { PageContent } from '$lib/types'
 	import { shortDate } from '$lib/utils'
+	import type readingTime from 'reading-time'
 
-	export let post: PageContent
+	type PostCardContent = {
+		frontMatter: {
+			title: string
+			slug: string
+		}
+		readTime?: ReturnType<typeof readingTime>
+	}
+
+	export let post: PostCardContent
 
 	$: ({ frontMatter } = post)
 </script>
