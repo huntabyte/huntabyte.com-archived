@@ -13,7 +13,6 @@ COPY . .
 
 RUN pnpm run build
 
-FROM node:19-bullseye-slim
 USER node:node
 
 ENV FLY="true"
@@ -25,10 +24,6 @@ ENV CACHE_DB_PATH="${FLY_LITEFS_DIR}/${CACHE_DB_FILENAME}"
 ENV PORT="8080"
 ENV NODE_ENV="production"
 
-WORKDIR /app/
-
-COPY --from=builder --chown=node:node /app/node_modules /app/node_modules
-COPY --from=builder --chown=node:node /app/build /app/build
 COPY --chown=node:node package.json pnpm-lock.yaml ./
 COPY --from=flyio/litefs:0.3 /usr/local/bin/litefs /usr/local/bin/litefs
 
