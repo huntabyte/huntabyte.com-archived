@@ -18,6 +18,7 @@ ENV CACHE_DB_PATH="${FLY_LITEFS_DIR}/${CACHE_DB_FILENAME}"
 
 RUN --mount=type=secret,id=GH_TOKEN
 
+# Not sure if this is necessary or not since using process.env now
 ENV GH_TOKEN = $(cat /run/secrets/GH_TOKEN)
 
 RUN GH_TOKEN=$(cat /run/secrets/GH_TOKEN) CACHE_DB_PATH=${CACHE_DB_PATH} pnpm run build
