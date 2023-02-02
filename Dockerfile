@@ -15,12 +15,15 @@ COPY . .
 ENV CACHE_DB_FILENAME="cache.sqlite"
 ENV CACHE_DB_PATH="${FLY_LITEFS_DIR}/${CACHE_DB_FILENAME}"
 
-RUN echo ${GH_TOKEN}
+
+RUN --mount=type=secret,id=GH_TOKEN
+
+ENV GH_TOKEN = $(cat /run/secrets/GH_TOKEN)
+
 RUN GH_TOKEN=${GH_TOKEN} CACHE_DB_PATH=${CACHE_DB_PATH} pnpm run build
 
 ENV FLY="true"
 ENV FLY_LITEFS_DIR="/litefs"
-
 
 
 ENV PORT="8080"
