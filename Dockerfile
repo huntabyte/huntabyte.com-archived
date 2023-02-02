@@ -15,6 +15,7 @@ COPY . .
 ENV CACHE_DB_FILENAME="cache.sqlite"
 ENV CACHE_DB_PATH="${FLY_LITEFS_DIR}/${CACHE_DB_FILENAME}"
 
+RUN echo ${GH_TOKEN}
 RUN GH_TOKEN=${GH_TOKEN} CACHE_DB_PATH=${CACHE_DB_PATH} pnpm run build
 
 ENV FLY="true"
@@ -24,10 +25,11 @@ ENV FLY_LITEFS_DIR="/litefs"
 
 ENV PORT="8080"
 ENV NODE_ENV="production"
+ENV ORIGIN="https://huntabyte.fly.dev"
 
 COPY --from=flyio/litefs:0.3 /usr/local/bin/litefs /usr/local/bin/litefs
 
 COPY config/litefs.yml /etc/litefs.yml
 RUN mkdir -p /data ${DB_DIR}
 
-CMD ["litefs", "mount", "--", "ORIGIN=https://huntabyte.fly.dev", "node", "build"]
+CMD ["litefs", "mount", "--", "node", "build"]
