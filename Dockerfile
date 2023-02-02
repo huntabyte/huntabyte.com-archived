@@ -1,7 +1,6 @@
 FROM node:19-bullseye-slim as builder
 
 
-
 # Install necessary OS dependencies
 RUN apt-get update && apt-get install -y fuse openssl sqlite3 ca-certificates procps python3 make g++
 
