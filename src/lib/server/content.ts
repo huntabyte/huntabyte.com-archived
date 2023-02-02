@@ -3,7 +3,9 @@ import { cache } from "$lib/server/cache"
 import { compileMarkdown } from "$lib/server/compile-markdown"
 import { cachified } from "cachified"
 import { typedBoolean } from "$lib/utils"
-import type { PageContent } from "$lib/types"
+import type { PageContent, BlogListItem, ContentDir } from "$lib/types"
+import { blogListItemSchema, pageContentSchema } from "$lib/schemas"
+import { z } from "zod"
 
 type CachifiedOptions = {
 	ttl?: number
@@ -18,9 +20,9 @@ const defaultCacheOptions: CachifiedOptions = {
 }
 
 async function getRawPageContent(
-	{ contentDir, slug }: { contentDir: string; slug: string },
+	{ contentDir, slug }: { contentDir: ContentDir; slug: string },
 	options: CachifiedOptions = defaultCacheOptions,
-) {
+): Promise<string> {
 	const key = `${contentDir}:${slug}:raw`
 	const { ttl, staleWhileRevalidate, forceFresh } = options
 	const rawPageContent = await cachified({
@@ -39,9 +41,9 @@ async function getRawPageContent(
 }
 
 export async function getCompiledPageContent(
-	{ contentDir, slug }: { contentDir: string; slug: string },
+	{ contentDir, slug }: { contentDir: ContentDir; slug: string },
 	options: CachifiedOptions = defaultCacheOptions,
-) {
+): Promise<PageContent> {
 	const key = `${contentDir}:${slug}:compiled`
 	const { ttl, staleWhileRevalidate, forceFresh } = options
 	const pageContent = await cachified({
@@ -68,6 +70,7 @@ export async function getCompiledPageContent(
 			})
 			// add slug to frontmatter for linking, etc.
 			compiledPageContent.frontMatter.slug = slug
+
 			return compiledPageContent
 		},
 	})
@@ -78,7 +81,7 @@ export async function getCompiledPageContent(
 
 	pageContent.frontMatter.slug = slug
 
-	return pageContent
+	return pageContentSchema.parse(pageContent)
 }
 
 /**
@@ -88,9 +91,14 @@ export async function getCompiledPageContent(
  * @returns
  */
 async function getContentList(
-	contentDir: string,
+	contentDir: ContentDir,
 	options: CachifiedOptions = defaultCacheOptions,
-) {
+): Promise<
+	{
+		name: string
+		slug: string
+	}[]
+> {
 	const { ttl, forceFresh, staleWhileRevalidate } = options
 	const key = `${contentDir}:list:raw`
 	return cachified({
@@ -114,9 +122,9 @@ async function getContentList(
 }
 
 async function getCompiledContentList(
-	contentDir: string,
+	contentDir: ContentDir,
 	options: CachifiedOptions = defaultCacheOptions,
-) {
+): Promise<PageContent[]> {
 	const contentList = await getContentList(contentDir)
 
 	const rawContentList = await Promise.all(
@@ -141,7 +149,7 @@ async function getCompiledContentList(
 
 export async function getBlogListItems(
 	options: CachifiedOptions = defaultCacheOptions,
-) {
+): Promise<BlogListItem[]> {
 	const { ttl, staleWhileRevalidate, forceFresh } = options
 	const key = "blog:list:compiled"
 	return cachified({
@@ -158,18 +166,14 @@ export async function getBlogListItems(
 					),
 			)
 
-			postList = postList.sort((a, z) => {
-				const aDate = new Date(a.frontMatter.date)
-				const zDate = new Date(z.frontMatter.date)
+			postList = postList.sort((first, last) => {
+				const aDate = first.frontMatter.date
+				const zDate = last.frontMatter.date
+
 				return zDate.getTime() - aDate.getTime()
 			})
 
-			return postList.map(removeCodeFromListItem)
+			return postList.map((post) => blogListItemSchema.parse(post))
 		},
 	})
-}
-
-function removeCodeFromListItem(post: PageContent) {
-	const { content, ...listItem } = post
-	return listItem
 }

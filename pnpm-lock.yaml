@@ -15,6 +15,7 @@ specifiers:
   autoprefixer: ^10.4.7
   better-sqlite3: ^8.0.1
   cachified: ^3.1.0
+  dotenv: ^16.0.3
   eslint: ^8.28.0
   eslint-config-prettier: ^8.5.0
   eslint-plugin-svelte3: ^4.0.0
@@ -45,12 +46,14 @@ specifiers:
   unified: ^10.1.2
   vite: ^4.0.0
   vitest: ^0.25.3
+  zod: ^3.20.2
 
 dependencies:
   '@octokit/plugin-throttling': 5.0.1_@octokit+core@4.2.0
   '@octokit/rest': 19.0.7
   better-sqlite3: 8.0.1
   cachified: 3.1.0
+  dotenv: 16.0.3
   gray-matter: 4.0.3
   reading-time: 1.5.0
   rehype-autolink-headings: 6.1.1
@@ -93,6 +96,7 @@ devDependencies:
   typescript: 4.9.4
   vite: 4.0.4
   vitest: 0.25.8
+  zod: 3.20.2
 
 packages:
 
@@ -1372,6 +1376,11 @@ packages:
     dependencies:
       esutils: 2.0.3
     dev: true
+
+  /dotenv/16.0.3:
+    resolution: {integrity: sha512-7GO6HghkA5fYG9TYnNxi14/7K9f5occMlp3zXAuSxn7CKCxt9xbNWG7yF8hTCSUchlfWSe3uLmlPfigevRItzQ==}
+    engines: {node: '>=12'}
+    dev: false
 
   /electron-to-chromium/1.4.284:
     resolution: {integrity: sha512-M8WEXFuKXMYMVr45fo8mq0wUrrJHheiKZf6BArTKk9ZBYCKJEOU5H8cdWgDT+qCVZf7Na4lVUaZsA+h6uA9+PA==}
@@ -3980,6 +3989,10 @@ packages:
   /yocto-queue/0.1.0:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
+    dev: true
+
+  /zod/3.20.2:
+    resolution: {integrity: sha512-1MzNQdAvO+54H+EaK5YpyEy0T+Ejo/7YLHS93G3RnYWh5gaotGHwGeN/ZO687qEDU2y4CdStQYXVHIgrUl5UVQ==}
     dev: true
 
   /zwitch/2.0.4:

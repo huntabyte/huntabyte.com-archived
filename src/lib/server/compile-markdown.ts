@@ -15,7 +15,10 @@ import remarkSmartyPants from "remark-smartypants"
 import rehypeCodeTitles from "rehype-code-titles"
 import rehypePrism from "rehype-prism-plus"
 
+import { z } from "zod"
+
 import type { FrontMatter, PageContent } from "$lib/types"
+import { frontMatterSchema, readingTimeSchema } from "$lib/schemas"
 
 // TODO: Add link to source - need to think about S3, CF, or Cloudinary for this.
 function searchAndReplace(content: string): string {
@@ -59,6 +62,8 @@ export async function compileMarkdown(
 	slug: string,
 ): Promise<PageContent> {
 	const { content, data } = matter(markdown)
+
+	// manually set the slug to maintain sync with the file name
 	data.slug = slug
 
 	const result = await unified()
@@ -71,12 +76,12 @@ export async function compileMarkdown(
 		.use(toHtml)
 		.process(searchAndReplace(content))
 
-	const compiledContent = result.value as string
+	const compiledContent = z.string().parse(result.value)
 	const readTime = readingTime(compiledContent)
 
 	return {
 		content: compiledContent,
-		frontMatter: data as FrontMatter,
-		readTime,
+		frontMatter: frontMatterSchema.parse(data),
+		readTime: readingTimeSchema.parse(readTime),
 	}
 }
