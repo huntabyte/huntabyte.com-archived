@@ -4,7 +4,6 @@
 
 	export let data: PageData
 	$: ({ pageContent } = data)
-	console.log(pageContent)
 </script>
 
 <div class="flex flex-col items-center mx-auto w-full max-w-2xl gap-6">
