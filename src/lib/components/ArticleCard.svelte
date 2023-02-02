@@ -1,17 +1,9 @@
 <script lang="ts">
-	import type { PageContent } from '$lib/types'
+	import type { BlogListItem } from '$lib/types'
 	import { shortDate } from '$lib/utils'
 	import type readingTime from 'reading-time'
 
-	type PostCardContent = {
-		frontMatter: {
-			title: string
-			slug: string
-		}
-		readTime?: ReturnType<typeof readingTime>
-	}
-
-	export let post: PostCardContent
+	export let post: BlogListItem
 
 	$: ({ frontMatter } = post)
 </script>

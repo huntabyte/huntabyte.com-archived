@@ -1,6 +1,6 @@
-// Interacting with the GitHub API in this manner was inspired by @kentcdodds
 import { Octokit as createOctokit } from "@octokit/rest"
 import { throttling } from "@octokit/plugin-throttling"
+import { z } from "zod"
 
 const ref = "main"
 const GH_TOKEN = process.env.GH_TOKEN
@@ -13,6 +13,7 @@ type ThrottleOptions = {
 	request: { retryCount: number }
 }
 
+// Interacting with the GitHub API in this manner was inspired by @kentcdodds
 const octokit = new Octokit({
 	auth: GH_TOKEN,
 	throttle: {
@@ -46,15 +47,17 @@ export async function getMarkdownContent(relativePath: string) {
 		ref,
 	})
 
-	if ("content" in data && "encoding" in data) {
-		const encoding = data.encoding as Parameters<typeof Buffer.from>[1]
-		const content = Buffer.from(data.content, encoding).toString()
-		return content
-	}
+	const parsedData = z
+		.object({
+			encoding: z.string(),
+			content: z.string(),
+		})
+		.parse(data)
 
-	throw new Error(
-		`Tried to get ${path} but got back something unexpected. 'Content' or 'Encoding' property missing.`,
-	)
+	return Buffer.from(
+		parsedData.content,
+		parsedData.encoding as BufferEncoding,
+	).toString()
 }
 
 /**
@@ -70,13 +73,8 @@ export async function getMarkdownContentList(path: string) {
 		ref,
 	})
 
-	const data = res.data
-
-	if (!Array.isArray(data)) {
-		throw new Error(
-			`Tried to get ${path} but got back something unexpected. Expected an array.`,
-		)
-	}
-
-	return data
+	// Strip unused properties from the response
+	return z
+		.array(z.object({ name: z.string(), path: z.string() }))
+		.parse(res.data)
 }

@@ -6,7 +6,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 	response.headers.set("Referrer-Policy", "no-referrer")
 	response.headers.set(
 		"Permissions-Policy",
-		"accelerometer=(), autoplay=(), camera=(), document-domain=(), encrypted-media=(), fullscreen=(), gyroscope=(), interest-cohort=(), magnetometer=(), microphone=(), midi=(), payment=(), picture-in-picture=(), publickey-credentials-get=(), sync-xhr=(), usb=(), xr-spatial-tracking=(), geolocation=()",
+		"accelerometer=(), autoplay=(), camera=(), document-domain=(), encrypted-media=(), fullscreen=(), gyroscope=(), magnetometer=(), microphone=(), midi=(), payment=(), picture-in-picture=(), publickey-credentials-get=(), sync-xhr=(), usb=(), xr-spatial-tracking=(), geolocation=()",
 	)
 	response.headers.set("X-Content-Type-Options", "nosniff")
 
