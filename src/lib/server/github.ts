@@ -1,9 +1,9 @@
 // Interacting with the GitHub API in this manner was inspired by @kentcdodds
-import { GH_TOKEN } from "$env/static/private"
 import { Octokit as createOctokit } from "@octokit/rest"
 import { throttling } from "@octokit/plugin-throttling"
 
 const ref = "main"
+const GH_TOKEN = process.env.GH_TOKEN
 
 const Octokit = createOctokit.plugin(throttling)
 
