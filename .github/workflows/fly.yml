@@ -3,13 +3,16 @@ on:
   push:
     branches:
       - main
-      - dev
-  pull_request: {}
+    paths-ignore:
+    - content/**
 
+  pull_request:
+    paths-ignore:
+      - content/**
 
 jobs:
   deploy:
-    name: Deploy App
+    name: Deploy to Fly
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
