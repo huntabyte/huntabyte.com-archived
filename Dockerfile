@@ -60,4 +60,4 @@ COPY --from=flyio/litefs:0.3 /usr/local/bin/litefs /usr/local/bin/litefs
 COPY config/litefs.yml /etc/litefs.yml
 RUN mkdir -p /data ${FLY_LITEFS_DIR}
 
-CMD ["litefs", "mount", "--", "CACHE_DB_PATH=${CACHE_DB_PATH}", "node", "build"]
+CMD ["litefs", "mount", "--", "node", "build"]
