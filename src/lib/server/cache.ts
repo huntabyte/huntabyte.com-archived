@@ -2,7 +2,7 @@ import fs from "fs"
 import type { Cache as CachifiedCache } from "cachified"
 import Database from "better-sqlite3"
 import type BetterSqlite3 from "better-sqlite3"
-import { CACHE_DB_PATH } from "$env/static/private"
+import { CACHE_DB_PATH } from "$env/dynamic/private"
 
 declare global {
 	var __cacheDb: ReturnType<typeof Database> | undefined
