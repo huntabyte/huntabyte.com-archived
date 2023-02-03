@@ -1,9 +1,9 @@
 import { Octokit as createOctokit } from "@octokit/rest"
 import { throttling } from "@octokit/plugin-throttling"
+import { env } from "$env/dynamic/private"
 import { z } from "zod"
 
 const ref = "main"
-const GH_TOKEN = process.env.GH_TOKEN
 
 const Octokit = createOctokit.plugin(throttling)
 
@@ -15,7 +15,7 @@ type ThrottleOptions = {
 
 // Interacting with the GitHub API in this manner was inspired by @kentcdodds
 const octokit = new Octokit({
-	auth: GH_TOKEN,
+	auth: env.GH_TOKEN,
 	throttle: {
 		onRateLimit: (retryAfter: number, options: ThrottleOptions) => {
 			console.warn(

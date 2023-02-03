@@ -5,7 +5,6 @@ import { cachified } from "cachified"
 import { typedBoolean } from "$lib/utils"
 import type { PageContent, BlogListItem, ContentDir } from "$lib/types"
 import { blogListItemSchema, pageContentSchema } from "$lib/schemas"
-import { z } from "zod"
 
 type CachifiedOptions = {
 	ttl?: number

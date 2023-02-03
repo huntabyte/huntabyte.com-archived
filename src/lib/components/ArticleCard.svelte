@@ -1,7 +1,6 @@
 <script lang="ts">
 	import type { BlogListItem } from '$lib/types'
 	import { shortDate } from '$lib/utils'
-	import type readingTime from 'reading-time'
 
 	export let post: BlogListItem
 
