@@ -29,8 +29,12 @@ COPY --from=all-deps /app/node_modules /app/node_modules
 
 COPY . .
 
-RUN pnpm run build
+ENV FLY="true"
+ENV FLY_LITEFS_DIR="/litefs"
+ENV CACHE_DB_FILENAME="cache.sqlite"
+ENV CACHE_DB_PATH="${FLY_LITEFS_DIR}/${CACHE_DB_FILENAME}"
 
+RUN CACHE_DB_PATH=${CACHE_DB_PATH} pnpm run build
 
 FROM base as production
 
@@ -51,6 +55,6 @@ COPY . .
 
 COPY --from=flyio/litefs:0.3 /usr/local/bin/litefs /usr/local/bin/litefs
 COPY config/litefs.yml /etc/litefs.yml
-RUN mkdir -p /data ${DB_DIR}
+RUN mkdir -p /data ${FLY_LITEFS_DIR}
 
 CMD ["litefs", "mount", "--", "node", "build"]
