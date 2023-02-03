@@ -2,7 +2,7 @@ import fs from "fs"
 import type { Cache as CachifiedCache } from "cachified"
 import Database from "better-sqlite3"
 import type BetterSqlite3 from "better-sqlite3"
-import { CACHE_DB_PATH } from "$env/static/private"
+import { env } from "$env/dynamic/private"
 
 declare global {
 	var __cacheDb: ReturnType<typeof Database> | undefined
@@ -11,7 +11,7 @@ declare global {
 const cacheDb = global.__cacheDb ? global.__cacheDb : createDatabase()
 
 function createDatabase(retry = true): BetterSqlite3.Database {
-	const db = new Database(CACHE_DB_PATH)
+	const db = new Database(env.CACHE_DB_PATH)
 
 	try {
 		db.exec(`CREATE TABLE IF NOT EXISTS cache (
@@ -20,10 +20,10 @@ function createDatabase(retry = true): BetterSqlite3.Database {
             value TEXT
         )`)
 	} catch (e: unknown) {
-		fs.unlinkSync(CACHE_DB_PATH)
+		fs.unlinkSync(env.CACHE_DB_PATH)
 		if (retry) {
 			console.error(
-				`Error creating cache database. Deleting ${CACHE_DB_PATH} and retrying.`,
+				`Error creating cache database. Deleting ${env.CACHE_DB_PATH} and retrying.`,
 			)
 			return createDatabase(false)
 		}
