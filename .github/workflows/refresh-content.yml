@@ -23,7 +23,8 @@ jobs:
 
       - name: 🪝 Refresh Webhook
         uses: distributhor/workflow-webhook@v2
-    env:
-      webhook_url: ${{ secrets.REFRESH_WEBHOOK_URL }}
-      webhook_secret: ${{ secrets.REFRESH_WEBHOOK_SECRET }}
-      webhook_auth: ${{ secrets.REFRESH_WEBHOOK_AUTH }}
+        env:
+          webhook_url: ${{ secrets.REFRESH_WEBHOOK_URL }}
+          webhook_secret: ${{ secrets.REFRESH_WEBHOOK_SECRET }}
+          webhook_auth: ${{ secrets.REFRESH_WEBHOOK_AUTH }}
+          data: ${{ steps.files.outputs }}
