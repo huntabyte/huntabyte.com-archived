@@ -13,6 +13,5 @@ export const POST: RequestHandler = async ({ request }) => {
 		return json({ error: "Invalid authorization header" }, { status: 400 })
 	}
 
-	console.log("hit webhook")
 	return json("hit webhook")
 }
