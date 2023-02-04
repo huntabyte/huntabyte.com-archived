@@ -9,10 +9,20 @@ on:
 
 jobs:
   refresh:
-    name: Refresh Content Webhook
+    name: Refresh Content
     runs-on: ubuntu-latest
+
+
     steps:
-      - uses: distributhor/workflow-webhook@v2
+      - name: 📁 Get Changed Files
+        uses: jitterbit/get-changed-files@v1
+        id: files
+      - run: |
+          echo ${{ steps.files.outputs }} 
+
+
+      - name: 🪝 Refresh Webhook
+        uses: distributhor/workflow-webhook@v2
     env:
       webhook_url: ${{ secrets.REFRESH_WEBHOOK_URL }}
       webhook_secret: ${{ secrets.REFRESH_WEBHOOK_SECRET }}

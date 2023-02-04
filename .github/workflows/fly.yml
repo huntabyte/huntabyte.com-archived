@@ -1,18 +1,21 @@
-name: Fly Deploy
+name: 🚀 Deploy
 on:
   push:
     branches:
       - main
     paths-ignore:
       - content/**
+      - .github/workflows/refresh-content.yml
 
   pull_request:
     paths-ignore:
       - content/**
+      - .github/workflows/refresh-content.yml
 
 jobs:
   build:
     name: 🐋 Build
+    timeout-minutes: 15
     if: ${{ (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev') && github.event_name == 'push' }}
     runs-on: ubuntu-latest
     concurrency:
@@ -68,6 +71,7 @@ jobs:
 
   deploy:
     name: 🚀 Deploy
+    timeout-minutes: 15
     runs-on: ubuntu-latest
     needs: [ build ]
     if: ${{ (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev') && github.event_name == 'push' }}
