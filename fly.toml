@@ -3,7 +3,6 @@
 app = "huntabyte"
 kill_signal = "SIGINT"
 kill_timeout = 5
-processes = []
 
 [env]
 
@@ -22,6 +21,7 @@ processes = []
   processes = ["app"]
   protocol = "tcp"
   script_checks = []
+
   [services.concurrency]
     hard_limit = 25
     soft_limit = 20
@@ -41,3 +41,4 @@ processes = []
     interval = "15s"
     restart_limit = 0
     timeout = "2s"
+

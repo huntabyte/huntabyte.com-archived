@@ -5,6 +5,8 @@ FROM node:19-bullseye-slim as base
 RUN apt-get update && apt-get install -y fuse openssl sqlite3 ca-certificates procps python3 make g++
 RUN npm install -g pnpm
 
+############################################################################################################
+
 FROM base as all-deps
 
 WORKDIR /app
@@ -13,6 +15,8 @@ COPY package.json pnpm-lock.yaml ./
 
 RUN pnpm install
 
+############################################################################################################
+
 FROM base as production-deps
 
 WORKDIR /app
@@ -20,6 +24,9 @@ WORKDIR /app
 COPY --from=all-deps /app/node_modules /app/node_modules
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile --prod
+
+
+############################################################################################################
 
 FROM base as builder
 
@@ -38,6 +45,8 @@ ENV CACHE_DB_FILENAME="cache.sqlite"
 ENV CACHE_DB_PATH="${FLY_LITEFS_DIR}/${CACHE_DB_FILENAME}"
 
 RUN pnpm run build
+
+############################################################################################################
 
 FROM base as production
 
@@ -60,4 +69,4 @@ COPY --from=flyio/litefs:0.3 /usr/local/bin/litefs /usr/local/bin/litefs
 COPY config/litefs.yml /etc/litefs.yml
 RUN mkdir -p /data ${FLY_LITEFS_DIR}
 
-CMD ["litefs", "mount", "--", "node", "build"]
+CMD ["litefs", "mount", "--", "node", "./config/start.js"]
