@@ -1,6 +1,6 @@
 ---
-title: Third Article
-description: A simple description for my third ever article on my blog. Join me as we explore the world of blogging.
+title: Seventh Article
+description: A simple description for my first ever article on my blog. Join me as we explore the world of blogging.
 date: 2023-01-25
 updated: 2023-01-25
 
@@ -17,6 +17,8 @@ This is a numbered list:
 1. One
 2. Two
 3. Three
+
+Change here.
 
 This is a bulleted list:
 - A

@@ -14,17 +14,23 @@ jobs:
 
 
     steps:
-      - name: 📁 Get Changed Files
-        uses: jitterbit/get-changed-files@v1
-        id: files
-      - run: |
-          echo ${{ steps.files.outputs }} 
 
+      - name: 📁 Checkout Repo
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: "2"
+
+      - name: 📁 Get Changed Files in Content Directory
+        id: changed-files
+        uses: tj-actions/changed-files@v35
+        with:
+          files: content/**
 
       - name: 🪝 Refresh Webhook
+        if: steps.changed-files.outputs.any_changed == 'true'
         uses: distributhor/workflow-webhook@v2
         env:
           webhook_url: ${{ secrets.REFRESH_WEBHOOK_URL }}
           webhook_secret: ${{ secrets.REFRESH_WEBHOOK_SECRET }}
           webhook_auth: ${{ secrets.REFRESH_WEBHOOK_AUTH }}
-          data: ${{ steps.files.outputs }}
+          data: '{ "content": "${{ steps.changed-files.outputs.all_modified_files }}" }'
