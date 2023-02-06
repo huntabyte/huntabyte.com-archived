@@ -6,15 +6,12 @@ on:
     paths:
       - content/**
 
-
 jobs:
   refresh:
     name: Refresh Content
     runs-on: ubuntu-latest
 
-
     steps:
-
       - name: 📁 Checkout Repo
         uses: actions/checkout@v3
         with:
@@ -26,11 +23,26 @@ jobs:
         with:
           files: content/**
 
-      - name: 🪝 Refresh Webhook
-        if: steps.changed-files.outputs.any_changed == 'true'
-        uses: distributhor/workflow-webhook@v2
+      - name: Check Env Vars
         env:
           webhook_url: ${{ secrets.REFRESH_WEBHOOK_URL }}
           webhook_secret: ${{ secrets.REFRESH_WEBHOOK_SECRET }}
           webhook_auth: ${{ secrets.REFRESH_WEBHOOK_AUTH }}
           data: '{ "content": "${{ steps.changed-files.outputs.all_modified_files }}" }'
+        run: env
+
+      - name: 🪝 Refresh Webhook
+        if: steps.changed-files.outputs.any_changed == 'true'
+        env:
+          webhook_url: https://huntabyte.fly.dev/api/webhooks/refresh-content
+          webhook_secret: ${{ secrets.REFRESH_WEBHOOK_SECRET }}
+          webhook_auth: ${{ secrets.REFRESH_WEBHOOK_AUTH }}
+          data: '{ "content": "${{ steps.changed-files.outputs.all_modified_files }}" }'
+        with:
+          webhook_url: https://huntabyte.fly.dev/api/webhooks/refresh-content
+          webhook_secret: ${{ secrets.REFRESH_WEBHOOK_SECRET }}
+          webhook_auth: ${{ secrets.REFRESH_WEBHOOK_AUTH }}
+          data: '{ "content": "${{ steps.changed-files.outputs.all_modified_files }}" }'
+        uses: distributhor/workflow-webhook@v2
+       
+
