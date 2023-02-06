@@ -1,5 +1,6 @@
 import { json, type RequestHandler } from "@sveltejs/kit"
 import { env } from "$env/dynamic/private"
+import { refreshChangedContent } from "$lib/server/content"
 
 export const POST: RequestHandler = async ({ request }) => {
 	const authorization = request.headers.get("Authorization")
@@ -17,6 +18,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 	const body = await request.json()
 	console.error("body:", body)
+	await refreshChangedContent(body.data)
 
 	return json({ message: "success" })
 }

@@ -30,12 +30,12 @@ jobs:
           webhook_url: ${{ secrets.REFRESH_WEBHOOK_URL }}
           webhook_secret: ${{ secrets.REFRESH_WEBHOOK_SECRET }}
           webhook_auth: ${{ secrets.REFRESH_WEBHOOK_AUTH }}
-          data: '{ "content": "${{ steps.changed-files.outputs.all_modified_files }}" }'
+          data: '"${{ steps.changed-files.outputs.all_modified_files }}"'
         with:
           webhook_url: ${{ secrets.REFRESH_WEBHOOK_URL }}
           webhook_secret: ${{ secrets.REFRESH_WEBHOOK_SECRET }}
           webhook_auth: ${{ secrets.REFRESH_WEBHOOK_AUTH }}
-          data: '{ "content": "${{ steps.changed-files.outputs.all_modified_files }}" }'
+          data: '"${{ steps.changed-files.outputs.all_modified_files }}"'
         uses: distributhor/workflow-webhook@v2
        
 

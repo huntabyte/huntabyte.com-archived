@@ -19,7 +19,7 @@ const defaultCacheOptions: CachifiedOptions = {
 }
 
 async function getRawPageContent(
-	{ contentDir, slug }: { contentDir: ContentDir; slug: string },
+	{ contentDir, slug }: { contentDir: string; slug: string },
 	options: CachifiedOptions = defaultCacheOptions,
 ): Promise<string> {
 	const key = `${contentDir}:${slug}:raw`
@@ -40,7 +40,7 @@ async function getRawPageContent(
 }
 
 export async function getCompiledPageContent(
-	{ contentDir, slug }: { contentDir: ContentDir; slug: string },
+	{ contentDir, slug }: { contentDir: string; slug: string },
 	options: CachifiedOptions = defaultCacheOptions,
 ): Promise<PageContent> {
 	const key = `${contentDir}:${slug}:compiled`
@@ -87,7 +87,6 @@ export async function getCompiledPageContent(
  *
  * @param contentDir the content directory to list files for
  * Example: "blog" or "snippets"
- * @returns
  */
 async function getContentList(
 	contentDir: ContentDir,
@@ -175,4 +174,46 @@ export async function getBlogListItems(
 			return postList.map((post) => blogListItemSchema.parse(post))
 		},
 	})
+}
+
+/**
+ *
+ * @param changedPaths a string with paths to each changed file, separated by a space.
+ * This is the format being returned by the `tj-actions/changed-files@v35` GitHub action.
+ * Example: 'content/blog/article.md content/snippets/prisma.md content/blog/another-article.md'
+ *
+ * @returns
+ */
+export async function refreshChangedContent(changedPaths: string) {
+	const pathList = changedPaths
+		.replaceAll("content/", "")
+		.replaceAll(".md", "")
+		.split(" ")
+	const refreshOptions: CachifiedOptions = {
+		forceFresh: true,
+		...defaultCacheOptions,
+	}
+	try {
+		await Promise.all(
+			pathList.map((fullPath: string) => {
+				const splitPath = fullPath.split("/")
+				const contentDir = splitPath[0]
+				const slug = splitPath[1]
+				return getCompiledPageContent(
+					{
+						contentDir,
+						slug,
+					},
+					refreshOptions,
+				)
+			}),
+		)
+
+		console.log("Refreshed Changed Content")
+		return true
+	} catch (e) {
+		console.error(e)
+		console.error("Could not refresh changed content")
+		return false
+	}
 }
