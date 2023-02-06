@@ -1,6 +1,6 @@
 import { getMarkdownContentList, getMarkdownContent } from "$lib/server/github"
 import { cache } from "$lib/server/cache"
-import { compileMarkdown } from "$lib/server/compile-markdown"
+import { compileMarkdown } from "$lib/server/markdown"
 import { cachified } from "cachified"
 import { typedBoolean } from "$lib/utils"
 import type { PageContent, BlogListItem, ContentDir } from "$lib/types"

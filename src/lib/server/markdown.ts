@@ -17,7 +17,7 @@ import rehypePrism from "rehype-prism-plus"
 
 import { z } from "zod"
 
-import type { FrontMatter, PageContent } from "$lib/types"
+import type { PageContent } from "$lib/types"
 import { frontMatterSchema, readingTimeSchema } from "$lib/schemas"
 
 // TODO: Add link to source - need to think about S3, CF, or Cloudinary for this.
