@@ -1,38 +1,15 @@
-# create-svelte
+# huntabyte.com (under construction)
+A work in progress build of my personal website. The goal of this site is to serve as my home on the web. I intend for this site to be focused on content, consisting of articles, snippets, tools, etc.
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
+This project has become a sort of lab for myself. I have been experimenting with technologies/approaches that I am not super familiar with, but would like to be.
 
-## Creating a project
+## Tech Stack
+- **Framework**: [SvelteKit](https://kit.svelte.dev)
+- **Database**: [SQLite](https://sqlite.org) / [LiteFS](https://github.com/superfly/litefs)
+- **Content Management (CMS)**: [GitHub](https://github.com/huntabyte/huntabyte.com/tree/main/content)
+- **Styles**: [TailwindCSS](https://tailwindcss.com)
+- **Deployment**: [Fly.io](https://fly.io)
+- **Analytics**: tbd
 
-If you're seeing this, you've probably already done this step. Congrats!
-
-```bash
-# create a new project in the current directory
-npm create svelte@latest
-
-# create a new project in my-app
-npm create svelte@latest my-app
-```
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```bash
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+## Disclaimer
+I only decided to make this repo public as a work in progress so that anyone interested could follow along and see what I'm up to. Once I finish what I would call a "v1", I intend on doing a write-up of how it's built and working in more detail.
