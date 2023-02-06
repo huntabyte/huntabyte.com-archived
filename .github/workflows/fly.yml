@@ -7,11 +7,13 @@ on:
     paths-ignore:
       - content/**
       - .github/workflows/refresh-content.yml
+      - README.md
 
   pull_request:
     paths-ignore:
       - content/**
       - .github/workflows/refresh-content.yml
+      - README.md
 
 jobs:
   build:
