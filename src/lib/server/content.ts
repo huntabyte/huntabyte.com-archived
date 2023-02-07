@@ -209,7 +209,7 @@ async function deleteRenamedContent(renamed: string[], renamedTo: string[]) {
 		})
 		const [contentDir, slug] = path.split("/")
 		try {
-			const res = await getCompiledPageContent({ contentDir, slug })
+			await getCompiledPageContent({ contentDir, slug })
 		} catch (e) {
 			console.error(e)
 			console.error(
