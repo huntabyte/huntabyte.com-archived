@@ -185,18 +185,18 @@ export async function getBlogListItems(
 
 //TODO: optimize this please
 async function deleteRenamedContent(renamed: string[], renamedTo: string[]) {
-	renamed.forEach((path) => {
+	for (const path of renamed) {
 		renamedTo.forEach((item) => {
 			if (item.includes(path)) {
-				const fullPath = path.split(",")[0].split("/")[0]
-				const contentDir = fullPath[0]
-				const slug = fullPath[1]
+				const fullPath = item.split(",")[0].split("/")
+				const [contentDir, slug] = fullPath
 				const keys = [
 					`${contentDir}:${slug}:raw`,
 					`${contentDir}:${slug}:compiled`,
 				]
 				keys.forEach((key) => {
-					void cache.delete(key)
+					console.log("Key to delete:", key)
+					cache.delete(key)
 					const result = cacheDb
 						.prepare("SELECT value FROM cache WHERE key = ?")
 						.get(key)
@@ -207,7 +207,16 @@ async function deleteRenamedContent(renamed: string[], renamedTo: string[]) {
 				})
 			}
 		})
-	})
+		const [contentDir, slug] = path.split("/")
+		try {
+			const res = await getCompiledPageContent({ contentDir, slug })
+		} catch (e) {
+			console.error(e)
+			console.error(
+				`Error getting compiled page content for ${contentDir}/${slug}`,
+			)
+		}
+	}
 }
 
 /**
@@ -223,7 +232,9 @@ export async function refreshChangedContent(modifiedContent: ModifiedContent) {
 	const modifiedAndUpdated = [
 		...modifiedContent.renamed,
 		...modifiedContent.updated,
-	]
+	].filter((val) => val !== "")
+
+	console.log(modifiedAndUpdated)
 
 	const refreshOptions: CachifiedOptions = {
 		forceFresh: true,
