@@ -207,15 +207,6 @@ async function deleteRenamedContent(renamed: string[], renamedTo: string[]) {
 				})
 			}
 		})
-		const [contentDir, slug] = path.split("/")
-		try {
-			await getCompiledPageContent({ contentDir, slug })
-		} catch (e) {
-			console.error(e)
-			console.error(
-				`Error getting compiled page content for ${contentDir}/${slug}`,
-			)
-		}
 	}
 }
 
@@ -256,7 +247,7 @@ export async function refreshChangedContent(modifiedContent: ModifiedContent) {
 		}),
 	).then((results) =>
 		results.forEach((result) => {
-			console.log(result)
+			console.log(result.status)
 		}),
 	)
 
