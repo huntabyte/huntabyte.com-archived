@@ -27,3 +27,17 @@ export const pageContentSchema = z.object({
 	frontMatter: frontMatterSchema,
 	readTime: readingTimeSchema,
 })
+
+const contentListTransform = z
+	.string()
+	.transform((item) =>
+		item.replaceAll(".md", "").replaceAll("content/", "").split(" "),
+	)
+
+export const modifiedContentSchema = z.object({
+	renamed: contentListTransform,
+	updated: contentListTransform,
+	renamedTo: contentListTransform,
+	deleted: contentListTransform,
+	added: contentListTransform,
+})

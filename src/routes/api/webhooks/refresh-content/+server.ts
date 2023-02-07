@@ -1,6 +1,9 @@
 import { json, type RequestHandler } from "@sveltejs/kit"
 import { env } from "$env/dynamic/private"
 import { refreshChangedContent } from "$lib/server/content"
+import { ZodError } from "zod"
+import { modifiedContentSchema } from "$lib/schemas"
+import type { ModifiedContent } from "$lib/types"
 
 export const POST: RequestHandler = async ({ request }) => {
 	const authorization = request.headers.get("Authorization")
@@ -18,7 +21,24 @@ export const POST: RequestHandler = async ({ request }) => {
 
 	const body = await request.json()
 	console.error("body:", body.data)
-	await refreshChangedContent(body.data)
+	let parsedBody: ModifiedContent | null
+
+	try {
+		parsedBody = modifiedContentSchema.parse(body.data)
+	} catch (e) {
+		if (e instanceof ZodError) {
+			console.log(e)
+		}
+		parsedBody = null
+	}
+
+	if (!parsedBody) {
+		return json({ message: "Error parsing request body" }, { status: 400 })
+	}
+
+	console.log(parsedBody)
+
+	await refreshChangedContent(parsedBody)
 
 	return json({ message: "success" })
 }

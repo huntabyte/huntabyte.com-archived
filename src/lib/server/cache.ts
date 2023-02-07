@@ -8,7 +8,7 @@ declare global {
 	var __cacheDb: ReturnType<typeof Database> | undefined
 }
 
-const cacheDb = global.__cacheDb ? global.__cacheDb : createDatabase()
+export const cacheDb = global.__cacheDb ? global.__cacheDb : createDatabase()
 
 function createDatabase(retry = true): BetterSqlite3.Database {
 	const db = new Database(env.CACHE_DB_PATH)

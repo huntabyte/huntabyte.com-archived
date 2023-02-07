@@ -1,9 +1,14 @@
 import { getMarkdownContentList, getMarkdownContent } from "$lib/server/github"
-import { cache } from "$lib/server/cache"
+import { cache, cacheDb } from "$lib/server/cache"
 import { compileMarkdown } from "$lib/server/markdown"
 import { cachified } from "cachified"
 import { typedBoolean } from "$lib/utils"
-import type { PageContent, BlogListItem, ContentDir } from "$lib/types"
+import type {
+	PageContent,
+	BlogListItem,
+	ContentDir,
+	ModifiedContent,
+} from "$lib/types"
 import { blogListItemSchema, pageContentSchema } from "$lib/schemas"
 
 type CachifiedOptions = {
@@ -178,6 +183,30 @@ export async function getBlogListItems(
 	})
 }
 
+async function deleteRenamedContent(renamed: string[], renamedTo: string[]) {
+	renamed.forEach((path) => {
+		renamedTo.forEach((item) => {
+			if (item.includes(path)) {
+				const fullPath = path.split(",")[0].split("/")[0]
+				const contentDir = fullPath[0]
+				const slug = fullPath[1]
+				const keys = [
+					`${contentDir}:${slug}:raw`,
+					`${contentDir}:${slug}:compiled`,
+				]
+				keys.forEach((key) => {
+					void cache.delete(key)
+					const result = cacheDb
+						.prepare("SELECT value FROM cache WHERE key = ?")
+						.get(key)
+					console.log(result)
+				})
+			}
+		})
+	})
+	// TODO: Probably should check to make sure that these were actually deleted.
+}
+
 /**
  *
  * @param changedPaths a string with paths to each changed file, separated by a space.
@@ -186,11 +215,7 @@ export async function getBlogListItems(
  *
  * @returns
  */
-export async function refreshChangedContent(changedPaths: string) {
-	const pathList = changedPaths
-		.replaceAll("content/", "")
-		.replaceAll(".md", "")
-		.split(" ")
+export async function refreshChangedContent(modifiedContent: ModifiedContent) {
 	const refreshOptions: CachifiedOptions = {
 		forceFresh: true,
 		...defaultCacheOptions,
