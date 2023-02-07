@@ -40,6 +40,7 @@ const octokit = new Octokit({
  */
 export async function getMarkdownContent(relativePath: string) {
 	const path = `content/${relativePath}.md`
+
 	const { data } = await octokit.repos.getContent({
 		owner: "huntabyte",
 		repo: "huntabyte.com",

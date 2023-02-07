@@ -17,8 +17,17 @@ export const POST: RequestHandler = async ({ request }) => {
 	}
 
 	const body = await request.json()
-	console.error("body:", body)
+	console.error("body:", body.data)
 	await refreshChangedContent(body.data)
 
 	return json({ message: "success" })
+}
+
+const body = {
+	data: {
+		updated: "blog/something.md",
+		renamed: "blog/something.md blog/somethingElse.md",
+		deleted: "blog/another-article.md",
+		created: "blog/anothernother-article.md",
+	},
 }

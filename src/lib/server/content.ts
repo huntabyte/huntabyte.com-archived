@@ -57,6 +57,7 @@ export async function getCompiledPageContent(
 				{ contentDir, slug },
 				options,
 			)
+
 			const compiledPageContent = await compileMarkdown(
 				rawPageContent,
 				slug,
@@ -75,6 +76,7 @@ export async function getCompiledPageContent(
 	})
 	if (!pageContent) {
 		// if page doesn't exist, remove from cache
+		console.log("No page content found.")
 		void cache.delete(key)
 	}
 
