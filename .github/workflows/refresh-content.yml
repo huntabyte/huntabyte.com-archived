@@ -36,7 +36,7 @@ jobs:
           webhook_url: ${{ secrets.REFRESH_WEBHOOK_URL }}
           webhook_secret: ${{ secrets.REFRESH_WEBHOOK_SECRET }}
           webhook_auth: ${{ secrets.REFRESH_WEBHOOK_AUTH }}
-          data: '{"added": "${{ steps.changed-files.outputs.added_files }}","updated":"${{ steps.changed-files.outputs.all_modified_files }}","deleted": "${{ steps.changed-files.outputs.deleted_files }}","renamed": "${{ steps.changed-files.outputs.renamed_files }}", "renamedTo": "${{ steps.changed-files.outputs.all_old_new_renamed_files }}"}'
+          data: '{"added": "${{ steps.changed-files.outputs.added_files }}","updated":"${{ steps.changed-files.outputs.modified }}","deleted": "${{ steps.changed-files.outputs.deleted_files }}","renamed": "${{ steps.changed-files.outputs.renamed_files }}", "renamedTo": "${{ steps.changed-files.outputs.all_old_new_renamed_files }}"}'
         uses: distributhor/workflow-webhook@v2
        
 

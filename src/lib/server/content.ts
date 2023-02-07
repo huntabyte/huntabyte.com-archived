@@ -183,6 +183,7 @@ export async function getBlogListItems(
 	})
 }
 
+//TODO: optimize this please
 async function deleteRenamedContent(renamed: string[], renamedTo: string[]) {
 	renamed.forEach((path) => {
 		renamedTo.forEach((item) => {
@@ -199,12 +200,14 @@ async function deleteRenamedContent(renamed: string[], renamedTo: string[]) {
 					const result = cacheDb
 						.prepare("SELECT value FROM cache WHERE key = ?")
 						.get(key)
-					console.log(result)
+					if (result) {
+						// TODO: Something more than a console log for this probs
+						console.log(`Failed to delete ${key} from cache.`)
+					}
 				})
 			}
 		})
 	})
-	// TODO: Probably should check to make sure that these were actually deleted.
 }
 
 /**
@@ -216,31 +219,35 @@ async function deleteRenamedContent(renamed: string[], renamedTo: string[]) {
  * @returns
  */
 export async function refreshChangedContent(modifiedContent: ModifiedContent) {
+	void deleteRenamedContent(modifiedContent.renamed, modifiedContent.renamedTo)
+	const modifiedAndUpdated = [
+		...modifiedContent.renamed,
+		...modifiedContent.updated,
+	]
+
 	const refreshOptions: CachifiedOptions = {
 		forceFresh: true,
 		...defaultCacheOptions,
 	}
-	try {
-		await Promise.all(
-			pathList.map((fullPath: string) => {
-				const splitPath = fullPath.split("/")
-				const contentDir = splitPath[0]
-				const slug = splitPath[1]
-				return getCompiledPageContent(
-					{
-						contentDir,
-						slug,
-					},
-					refreshOptions,
-				)
-			}),
-		)
 
-		console.log("Refreshed Changed Content")
-		return true
-	} catch (e) {
-		console.error(e)
-		console.error("Could not refresh changed content")
-		return false
-	}
+	await Promise.allSettled(
+		modifiedAndUpdated.map((fullPath: string) => {
+			const splitPath = fullPath.split("/")
+			const contentDir = splitPath[0]
+			const slug = splitPath[1]
+			return getCompiledPageContent(
+				{
+					contentDir,
+					slug,
+				},
+				refreshOptions,
+			)
+		}),
+	).then((results) =>
+		results.forEach((result) => {
+			console.log(result)
+		}),
+	)
+
+	return true
 }
