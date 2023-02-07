@@ -35,7 +35,9 @@ const octokit = new Octokit({
 /**
  *
  * @param relativePath - Path relative to the content directory.
+ * 
  * Example: content/articles/first-article.md => articles/first-article.md
+ * 
  * Example: content/snippets/sample-snippet.md => snippets/sample-snippet.md
  */
 export async function getMarkdownContent(relativePath: string) {
@@ -62,11 +64,9 @@ export async function getMarkdownContent(relativePath: string) {
 }
 
 /**
- *
  * @param path the full path to content directory
- * @returns a promise that resolves to a list of files and directories at the provided path
  */
-export async function getMarkdownContentList(path: string) {
+export async function getMarkdownContentList(path: string): Promise<{path: string, name: string}[]> {
 	const res = await octokit.repos.getContent({
 		owner: "huntabyte",
 		repo: "huntabyte.com",

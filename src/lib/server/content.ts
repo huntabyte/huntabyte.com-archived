@@ -221,14 +221,13 @@ function deleteRenamedContent(renamed: string[], renamedTo: string[]): void {
                 `${contentDir}:${slug}:compiled`,
             ]
             keys.forEach((key) => {
-                console.log("Key to delete:", key)
                 cache.delete(key)
                 const result = cacheDb
                     .prepare("SELECT value FROM cache WHERE key = ?")
                     .get(key)
                 if (result) {
                     // TODO: Something more than a console log for this probs
-                    console.log(`Failed to delete ${key} from cache.`)
+                    console.error(`Failed to delete ${key} from cache.`)
                 }
             })
         }
@@ -245,12 +244,11 @@ async function deleteRemovedContent(removed: string[]) {
         const [ contentDir, slug ] = path.split('/')
         const keys = [`${contentDir}:${slug}:raw`, `${contentDir}:${slug}:compiled`]
         keys.forEach((key) => {
-            console.log('Key to delete:', key)
             cache.delete(key)
             const result = cacheDb.prepare("SELECT value FROM cache WHERE key = ?").get(key)
             if (result) {
                 // TODO: Something more than a console log
-                console.log(`Failed to delete ${key} from cache.`)
+                console.error(`Failed to delete ${key} from cache.`)
             }
         })
 
@@ -289,7 +287,9 @@ export async function refreshChangedContent(modifiedContent: ModifiedContent) {
 		}),
 	).then((results) =>
 		results.forEach((result) => {
-			console.log(result.status)
+			if (result.status !== "fulfilled") {
+                console.error(`Error refreshing a modified cache entry`)
+            }
 		}),
 	)
 

@@ -20,7 +20,7 @@ export const POST: RequestHandler = async ({ request }) => {
 	}
 
 	const body = await request.json()
-	console.error("body:", body.data)
+
 	let parsedBody: ModifiedContent | null
 
 	try {
@@ -36,18 +36,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		return json({ message: "Error parsing request body" }, { status: 400 })
 	}
 
-	console.log(parsedBody)
-
 	await refreshChangedContent(parsedBody)
 
 	return json({ message: "success" })
-}
-
-const body = {
-	data: {
-		updated: "blog/something.md",
-		renamed: "blog/something.md blog/somethingElse.md",
-		deleted: "blog/another-article.md",
-		created: "blog/anothernother-article.md",
-	},
 }
