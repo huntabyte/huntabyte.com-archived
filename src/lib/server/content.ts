@@ -24,7 +24,8 @@ const defaultCacheOptions: CachifiedOptions = {
 }
 
 async function getRawPageContent(
-	{ contentDir, slug }: { contentDir: string; slug: string },
+	contentDir: string,
+    slug: string,
 	options: CachifiedOptions = defaultCacheOptions,
 ): Promise<string> {
 	const key = `${contentDir}:${slug}:raw`
@@ -45,7 +46,8 @@ async function getRawPageContent(
 }
 
 export async function getCompiledPageContent(
-	{ contentDir, slug }: { contentDir: string; slug: string },
+	contentDir: string,
+    slug: string,
 	options: CachifiedOptions = defaultCacheOptions,
 ): Promise<PageContent> {
 	const key = `${contentDir}:${slug}:compiled`
@@ -59,7 +61,8 @@ export async function getCompiledPageContent(
 		checkValue: (value) => value !== null,
 		getFreshValue: async () => {
 			const rawPageContent = await getRawPageContent(
-				{ contentDir, slug },
+				contentDir,
+                slug,
 				options,
 			)
 
@@ -126,6 +129,15 @@ async function getContentList(
 	})
 }
 
+/** 
+ * @param contentDir the content directory to list files for
+ * Example: "blog" or "snippets"
+ * @param options (optional) - Cachified options. If not provided, default options
+ * are used.
+ * 
+ * Given a content directory, gets the compiled page content and metadata for all
+ * markdown content within that directory.
+*/
 async function getCompiledContentList(
 	contentDir: ContentDir,
 	options: CachifiedOptions = defaultCacheOptions,
@@ -135,7 +147,7 @@ async function getCompiledContentList(
 	const rawContentList = await Promise.all(
 		contentList.map(async ({ slug }) => {
 			return {
-				markdown: await getRawPageContent({ contentDir, slug }, options),
+				markdown: await getRawPageContent(contentDir, slug, options),
 				slug,
 			}
 		}),
@@ -143,15 +155,21 @@ async function getCompiledContentList(
 
 	const compiledContentList = await Promise.all(
 		rawContentList.map((pageContent) =>
-			getCompiledPageContent({
+			getCompiledPageContent(
 				contentDir,
-				slug: pageContent.slug,
-			}),
+				pageContent.slug,
+			),
 		),
 	)
 	return compiledContentList.filter(typedBoolean)
 }
 
+/** 
+ * @param options (optional) - Cachified options. If not provided, default options
+ * are used.
+ * 
+ * Returns a list of cached blog items without the page content.
+*/
 export async function getBlogListItems(
 	options: CachifiedOptions = defaultCacheOptions,
 ): Promise<BlogListItem[]> {
@@ -183,49 +201,75 @@ export async function getBlogListItems(
 	})
 }
 
-//TODO: optimize this please
-async function deleteRenamedContent(renamed: string[], renamedTo: string[]) {
+/** 
+ * @param renamed - Array of file paths that were renamed. This only
+ * includes the new filename.
+ * @param renamedTo - Array of renamed file paths and their previous names separated
+ * by a comma.
+ * 
+ * Determines the previous paths of renamed files and removes them from the cache. 
+*/
+function deleteRenamedContent(renamed: string[], renamedTo: string[]): void {
 	for (const path of renamed) {
-		renamedTo.forEach((item) => {
-			if (item.includes(path)) {
-				const fullPath = item.split(",")[0].split("/")
-				const [contentDir, slug] = fullPath
-				const keys = [
-					`${contentDir}:${slug}:raw`,
-					`${contentDir}:${slug}:compiled`,
-				]
-				keys.forEach((key) => {
-					console.log("Key to delete:", key)
-					cache.delete(key)
-					const result = cacheDb
-						.prepare("SELECT value FROM cache WHERE key = ?")
-						.get(key)
-					if (result) {
-						// TODO: Something more than a console log for this probs
-						console.log(`Failed to delete ${key} from cache.`)
-					}
-				})
-			}
-		})
+        for (const item of renamedTo) {
+            if (!item.includes(path)) {
+                continue
+            }
+            const [contentDir, slug] = item.split(",")[0].split("/")
+            const keys = [
+                `${contentDir}:${slug}:raw`,
+                `${contentDir}:${slug}:compiled`,
+            ]
+            keys.forEach((key) => {
+                console.log("Key to delete:", key)
+                cache.delete(key)
+                const result = cacheDb
+                    .prepare("SELECT value FROM cache WHERE key = ?")
+                    .get(key)
+                if (result) {
+                    // TODO: Something more than a console log for this probs
+                    console.log(`Failed to delete ${key} from cache.`)
+                }
+            })
+        }
 	}
 }
 
+/** 
+ * @param removed - Array of filepaths that were removed.
+ * 
+ * Deletes removed content from the cache.
+*/
+async function deleteRemovedContent(removed: string[]) {
+    for (const path of removed) {
+        const [ contentDir, slug ] = path.split('/')
+        const keys = [`${contentDir}:${slug}:raw`, `${contentDir}:${slug}:compiled`]
+        keys.forEach((key) => {
+            console.log('Key to delete:', key)
+            cache.delete(key)
+            const result = cacheDb.prepare("SELECT value FROM cache WHERE key = ?").get(key)
+            if (result) {
+                // TODO: Something more than a console log
+                console.log(`Failed to delete ${key} from cache.`)
+            }
+        })
+
+    }
+}
+
 /**
- *
- * @param changedPaths a string with paths to each changed file, separated by a space.
- * This is the format being returned by the `tj-actions/changed-files@v35` GitHub action.
- * Example: 'content/blog/article.md content/snippets/prisma.md content/blog/another-article.md'
- *
- * @returns
- */
+ * @param modifiedContent - an object of modified content. 
+ * 
+ * Syncs the cache db with the modified content on GitHub.
+*/
 export async function refreshChangedContent(modifiedContent: ModifiedContent) {
 	void deleteRenamedContent(modifiedContent.renamed, modifiedContent.renamedTo)
+    void deleteRemovedContent(modifiedContent.deleted)
+
 	const modifiedAndUpdated = [
 		...modifiedContent.renamed,
 		...modifiedContent.updated,
 	].filter((val) => val !== "")
-
-	console.log(modifiedAndUpdated)
 
 	const refreshOptions: CachifiedOptions = {
 		forceFresh: true,
@@ -238,10 +282,8 @@ export async function refreshChangedContent(modifiedContent: ModifiedContent) {
 			const contentDir = splitPath[0]
 			const slug = splitPath[1]
 			return getCompiledPageContent(
-				{
-					contentDir,
-					slug,
-				},
+                contentDir,
+                slug,
 				refreshOptions,
 			)
 		}),
