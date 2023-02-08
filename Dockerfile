@@ -30,13 +30,15 @@ RUN pnpm install --frozen-lockfile --prod
 
 FROM base as builder
 
+RUN mkdir litefs
+
 WORKDIR /app
 
 COPY --from=all-deps /app/node_modules /app/node_modules
 
 COPY . .
 
-ENV PORT="8080"
+ENV PORT="8081"
 ENV NODE_ENV="production"
 ENV ORIGIN="https://huntabyte.fly.dev"
 ENV FLY="true"
@@ -44,13 +46,14 @@ ENV FLY_LITEFS_DIR="/litefs"
 ENV CACHE_DB_FILENAME="cache.sqlite"
 ENV CACHE_DB_PATH="${FLY_LITEFS_DIR}/${CACHE_DB_FILENAME}"
 
+
 RUN pnpm run build
 
 ############################################################################################################
 
 FROM base as production
 
-ENV PORT="8080"
+ENV PORT="8081"
 ENV NODE_ENV="production"
 ENV ORIGIN="https://huntabyte.fly.dev"
 ENV FLY="true"
