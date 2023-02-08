@@ -1,13 +1,16 @@
 import express from "express"
 import { createServer } from "http"
 import { handler } from "../build/handler.js"
-
 const port = 8081
 const app = express()
 const server = createServer(app)
 
 app.use((req, res, next) => {
-	console.log(process.env.FLY_REGION)
+	if (req.query.region) {
+		console.log("Requested region:", req.query.region)
+		res.setHeader("fly-replay", `region=${req.query.region}`)
+	}
+	console.log("Currently in region:", process.env.FLY_REGION)
 	next()
 })
 
