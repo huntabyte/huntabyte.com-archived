@@ -57,7 +57,7 @@ COPY --from=build /app/build /app/build
 
 COPY . .
 
-COPY --from=flyio/litefs:sha-f7d300b /usr/local/bin/litefs /usr/local/bin/litefs
+COPY --from=flyio/litefs:sha-e54bfe3 /usr/local/bin/litefs /usr/local/bin/litefs
 COPY config/litefs.yml /etc/litefs.yml
 RUN mkdir -p /data ${LITEFS_DIR}
 
