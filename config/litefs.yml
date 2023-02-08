@@ -1,21 +1,20 @@
 fuse:
-  dir: '${FLY_LITEFS_DIR}'
-
+  dir: "${LITEFS_DIR}"
   debug: false
 
 data:
-  dir: /data/litefs
+  dir: "/data/litefs"
 
 exit-on-error: false
 
 lease:
-  type: 'consul'
+  type: "consul"
   candidate: true
-  advertise-url: 'http://${HOSTNAME}.vm.${FLY_APP_NAME}.internal:20202'
+  advertise-url: "http://${HOSTNAME}.vm.${FLY_APP_NAME}.internal:20202"
 
   consul:
-    url: '${FLY_CONSUL_URL}'
-    key: 'lifefs/${FLY_APP_NAME}'
+    url: "${FLY_CONSUL_URL}"
+    key: "lifefs/${FLY_APP_NAME}"
 
 
 proxy:
@@ -28,7 +27,7 @@ proxy:
   target: "localhost:8081"
 
   # Filename of the SQLite database you want to use for TXID tracking.
-  db: "cache.sqlite"
+  db: "${CACHE_DB_FILENAME}"
 
   # If true, this enables verbose debug logging for the proxy.
   debug: false

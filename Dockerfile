@@ -28,24 +28,13 @@ RUN pnpm install --frozen-lockfile --prod
 
 ############################################################################################################
 
-FROM base as builder
-
-RUN mkdir litefs
+FROM base as build
 
 WORKDIR /app
 
 COPY --from=all-deps /app/node_modules /app/node_modules
 
 COPY . .
-
-ENV PORT="8081"
-ENV NODE_ENV="production"
-ENV ORIGIN="https://huntabyte.fly.dev"
-ENV FLY="true"
-ENV FLY_LITEFS_DIR="/litefs"
-ENV CACHE_DB_FILENAME="cache.sqlite"
-ENV CACHE_DB_PATH="${FLY_LITEFS_DIR}/${CACHE_DB_FILENAME}"
-
 
 RUN pnpm run build
 
@@ -57,19 +46,19 @@ ENV PORT="8081"
 ENV NODE_ENV="production"
 ENV ORIGIN="https://huntabyte.fly.dev"
 ENV FLY="true"
-ENV FLY_LITEFS_DIR="/litefs"
+ENV LITEFS_DIR="/litefs"
 ENV CACHE_DB_FILENAME="cache.sqlite"
-ENV CACHE_DB_PATH="${FLY_LITEFS_DIR}/${CACHE_DB_FILENAME}"
+ENV CACHE_DB_PATH="/${LITEFS_DIR}/${CACHE_DB_FILENAME}"
 
 WORKDIR /app
 
 COPY --from=production-deps /app/node_modules /app/node_modules
-COPY --from=builder /app/build /app/build
+COPY --from=build /app/build /app/build
 
 COPY . .
 
-COPY --from=flyio/litefs:0.3 /usr/local/bin/litefs /usr/local/bin/litefs
+COPY --from=flyio/litefs:sha-f7d300b /usr/local/bin/litefs /usr/local/bin/litefs
 COPY config/litefs.yml /etc/litefs.yml
-RUN mkdir -p /data ${FLY_LITEFS_DIR}
+RUN mkdir -p /data ${LITEFS_DIR}
 
 CMD ["litefs", "mount", "--", "node", "./config/start.js"]
