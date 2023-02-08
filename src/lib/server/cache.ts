@@ -3,6 +3,7 @@ import type { Cache as CachifiedCache } from "cachified"
 import Database from "better-sqlite3"
 import type BetterSqlite3 from "better-sqlite3"
 import { env } from "$env/dynamic/private"
+import { logger } from "$lib/logger"
 
 declare global {
 	var __cacheDb: ReturnType<typeof Database> | undefined
@@ -11,6 +12,7 @@ declare global {
 export const cacheDb = global.__cacheDb ? global.__cacheDb : createDatabase()
 
 function createDatabase(retry = true): BetterSqlite3.Database {
+    logger.info(`Creating new database`)
 	const db = new Database(env.CACHE_DB_PATH)
 
 	try {
@@ -19,10 +21,11 @@ function createDatabase(retry = true): BetterSqlite3.Database {
             metadata TEXT,
             value TEXT
         )`)
+        logger.info('Successfully created cache database')
 	} catch (e: unknown) {
 		fs.unlinkSync(env.CACHE_DB_PATH)
 		if (retry) {
-			console.error(
+			logger.error(
 				`Error creating cache database. Deleting ${env.CACHE_DB_PATH} and retrying.`,
 			)
 			return createDatabase(false)
@@ -35,6 +38,7 @@ function createDatabase(retry = true): BetterSqlite3.Database {
 export const cache: CachifiedCache = {
 	name: "SQLite Cache",
 	get(key) {
+        logger.debug(`Getting key: ${key} from cache.`)
 		const result = cacheDb
 			.prepare("SELECT value, metadata FROM cache WHERE key = ?")
 			.get(key)
@@ -44,18 +48,14 @@ export const cache: CachifiedCache = {
 			value: JSON.parse(result.value),
 		}
 		if (!entry.metadata) {
-			console.error(`entry.metadata is null for ${key}`, { entry, result })
+			logger.error(`entry.metadata is null for ${key}`, { entry, result })
 		}
 		return entry
 	},
 	set(key, entry) {
+        logger.debug(`Setting key: ${key} with entry: ${entry} to cache.`)
 		if (!entry.metadata) {
-			console.error(
-				new Error(
-					`Someone's trying to set entry.metadata to null for "${key}"`,
-				),
-				{ entry },
-			)
+			logger.error(`Someone's trying to set entry.metadata to null for "${key}"`)
 			return
 		}
 		cacheDb
@@ -69,6 +69,7 @@ export const cache: CachifiedCache = {
 			})
 	},
 	delete(key) {
+        logger.debug(`Deleting ${key} from cache.`)
 		cacheDb.prepare("DELETE FROM cache WHERE key = ?").run(key)
 	},
 }

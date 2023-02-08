@@ -66,6 +66,7 @@
         "remark-rehype": "^10.1.0",
         "remark-slug": "^7.0.1",
         "remark-smartypants": "^2.0.0",
-        "unified": "^10.1.2"
+        "unified": "^10.1.2",
+        "winston": "^3.8.2"
     }
 }

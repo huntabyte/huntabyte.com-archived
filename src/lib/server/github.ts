@@ -2,6 +2,7 @@ import { Octokit as createOctokit } from "@octokit/rest"
 import { throttling } from "@octokit/plugin-throttling"
 import { env } from "$env/dynamic/private"
 import { z } from "zod"
+import { logger } from "$lib/logger"
 
 const ref = "main"
 
@@ -18,7 +19,7 @@ const octokit = new Octokit({
 	auth: env.GH_TOKEN,
 	throttle: {
 		onRateLimit: (retryAfter: number, options: ThrottleOptions) => {
-			console.warn(
+			logger.warn(
 				`Request quota exhausted for request ${options.method} ${options.url}. Retrying after ${retryAfter} seconds.`,
 			)
 
@@ -26,6 +27,9 @@ const octokit = new Octokit({
 		},
 		onAbuseLimit: (retryAfter: number, options: ThrottleOptions) => {
 			octokit.log.warn(
+				`Abuse detected for request ${options.method} ${options.url}`,
+			)
+            logger.warn(
 				`Abuse detected for request ${options.method} ${options.url}`,
 			)
 		},
@@ -42,6 +46,7 @@ const octokit = new Octokit({
  */
 export async function getMarkdownContent(relativePath: string) {
 	const path = `content/${relativePath}.md`
+    logger.debug(`Getting content for "${path}" from GitHub`)
 
 	const { data } = await octokit.repos.getContent({
 		owner: "huntabyte",
@@ -49,14 +54,16 @@ export async function getMarkdownContent(relativePath: string) {
 		path,
 		ref,
 	})
-
+    logger.debug(`Received content for "${path}" from GitHub`)
+    logger.debug(`Parsing content for "${path}"`)
 	const parsedData = z
-		.object({
-			encoding: z.string(),
-			content: z.string(),
-		})
-		.parse(data)
-
+    .object({
+        encoding: z.string(),
+        content: z.string(),
+    })
+    .parse(data)
+    logger.debug(`Parsed content for "${path}"`)
+    
 	return Buffer.from(
 		parsedData.content,
 		parsedData.encoding as BufferEncoding,
@@ -67,13 +74,14 @@ export async function getMarkdownContent(relativePath: string) {
  * @param path the full path to content directory
  */
 export async function getMarkdownContentList(path: string): Promise<{path: string, name: string}[]> {
+    logger.debug(`Getting content list for "${path}" from GitHub`)
 	const res = await octokit.repos.getContent({
 		owner: "huntabyte",
 		repo: "huntabyte.com",
 		path,
 		ref,
 	})
-
+    logger.debug(`Received content list for "${path}" from GitHub`)
 	// Strip unused properties from the response
 	return z
 		.array(z.object({ name: z.string(), path: z.string() }))

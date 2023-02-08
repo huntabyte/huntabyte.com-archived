@@ -1,3 +1,4 @@
+import { logger } from "$lib/logger"
 import type { Handle } from "@sveltejs/kit"
 
 export const handle: Handle = async ({ event, resolve }) => {
@@ -10,5 +11,10 @@ export const handle: Handle = async ({ event, resolve }) => {
 	)
 	response.headers.set("X-Content-Type-Options", "nosniff")
 
+	logger.info("This is info")
+	logger.error("This is an error")
+	logger.warn("This is warn")
+	logger.debug("This is debug")
+	logger.http("This is http")
 	return response
 }

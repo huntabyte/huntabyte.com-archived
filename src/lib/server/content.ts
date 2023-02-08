@@ -10,6 +10,7 @@ import type {
 	ModifiedContent,
 } from "$lib/types"
 import { blogListItemSchema, pageContentSchema } from "$lib/schemas"
+import { logger } from "$lib/logger"
 
 type CachifiedOptions = {
 	ttl?: number
@@ -70,7 +71,7 @@ export async function getCompiledPageContent(
 				rawPageContent,
 				slug,
 			).catch((err) => {
-				console.error(
+				logger.error(
 					`Failed to get compiled page content for ${contentDir}/${slug}`,
 					err,
 				)
@@ -84,7 +85,7 @@ export async function getCompiledPageContent(
 	})
 	if (!pageContent) {
 		// if page doesn't exist, remove from cache
-		console.log("No page content found.")
+		logger.info(`No page content found for ${key}, removing from cache.`)
 		void cache.delete(key)
 	}
 
@@ -210,6 +211,7 @@ export async function getBlogListItems(
  * Determines the previous paths of renamed files and removes them from the cache. 
 */
 function deleteRenamedContent(renamed: string[], renamedTo: string[]): void {
+    logger.info('Deleting old entries for renamed content')
 	for (const path of renamed) {
         for (const item of renamedTo) {
             if (!item.includes(path)) {
@@ -226,8 +228,9 @@ function deleteRenamedContent(renamed: string[], renamedTo: string[]): void {
                     .prepare("SELECT value FROM cache WHERE key = ?")
                     .get(key)
                 if (result) {
-                    // TODO: Something more than a console log for this probs
-                    console.error(`Failed to delete ${key} from cache.`)
+                    logger.error(`Failed to delete ${key} from cache.`)
+                } else {
+                    logger.info(`Successfully deleted ${key} from cache.`)
                 }
             })
         }
@@ -247,8 +250,9 @@ async function deleteRemovedContent(removed: string[]) {
             cache.delete(key)
             const result = cacheDb.prepare("SELECT value FROM cache WHERE key = ?").get(key)
             if (result) {
-                // TODO: Something more than a console log
-                console.error(`Failed to delete ${key} from cache.`)
+                logger.error(`Failed to delete ${key} from cache.`)
+            } else {
+                logger.info(`Successfully deleted ${key} from cache.`)
             }
         })
 
@@ -261,6 +265,7 @@ async function deleteRemovedContent(removed: string[]) {
  * Syncs the cache db with the modified content on GitHub.
 */
 export async function refreshChangedContent(modifiedContent: ModifiedContent) {
+    logger.info('Refreshing changed content')
 	void deleteRenamedContent(modifiedContent.renamed, modifiedContent.renamedTo)
     void deleteRemovedContent(modifiedContent.deleted)
 
@@ -288,10 +293,12 @@ export async function refreshChangedContent(modifiedContent: ModifiedContent) {
 	).then((results) =>
 		results.forEach((result) => {
 			if (result.status !== "fulfilled") {
-                console.error(`Error refreshing a modified cache entry`)
+                logger.error(`Error refreshing a modified cache entry`)
             }
 		}),
 	)
+
+    logger.info('Finished refreshing changed content')
 
 	return true
 }
