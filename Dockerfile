@@ -61,4 +61,4 @@ COPY --from=flyio/litefs:sha-e54bfe3 /usr/local/bin/litefs /usr/local/bin/litefs
 COPY litefs.yml /etc/litefs.yml
 RUN mkdir -p /data ${LITEFS_DIR}
 
-CMD ["litefs", "mount", "--", "node", "./config/start.js"]
+CMD ["litefs", "mount", "--", "node", "./server/start.js"]
