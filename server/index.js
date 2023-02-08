@@ -6,6 +6,11 @@ const port = 8081
 const app = express()
 const server = createServer(app)
 
+app.use((req, res, next) => {
+	console.log(process.env.FLY_REGION)
+	next()
+})
+
 app.use(handler)
 
 server.listen(port)
