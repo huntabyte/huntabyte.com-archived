@@ -13,7 +13,8 @@
         "lint": "prettier --plugin-search-dir . --check . && eslint .",
         "format": "prettier --plugin-search-dir . --write .",
         "start": "node build/index.js",
-        "act:content": "act --insecure-secrets --secret-file .secrets -W .github/workflows/refresh-content.yml "
+        "act:content": "act --insecure-secrets --secret-file .secrets -W .github/workflows/refresh-content.yml",
+        "act:deploy": "act --insecure-secrets --secret-file .secrets -W .github/workflows/fly.yml"
     },
     "devDependencies": {
         "@playwright/test": "^1.30.0",
