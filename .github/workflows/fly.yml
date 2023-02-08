@@ -1,21 +1,19 @@
 name: 🚀 Deploy
-on: workflow_dispatch
-  # Commenting the below out for early dev
-  # Will be running actions locally for time being.
-  # push:
-  #   branches:
-  #     - main
-  #     - dev
-  #   paths-ignore:
-  #     - content/**
-  #     - .github/workflows/refresh-content.yml
-  #     - README.md
+on:
+  push:
+    branches:
+      - main
+      - dev
+    paths-ignore:
+      - content/**
+      - .github/workflows/refresh-content.yml
+      - README.md
 
-  # pull_request:
-  #   paths-ignore:
-  #     - content/**
-  #     - .github/workflows/refresh-content.yml
-  #     - README.md
+  pull_request:
+    paths-ignore:
+      - content/**
+      - .github/workflows/refresh-content.yml
+      - README.md
 
 jobs:
   build:
