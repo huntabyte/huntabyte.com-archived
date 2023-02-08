@@ -12,7 +12,7 @@ declare global {
 export const cacheDb = global.__cacheDb ? global.__cacheDb : createDatabase()
 
 function createDatabase(retry = true): BetterSqlite3.Database {
-    logger.info(`Creating new database`)
+	logger.info("Creating new database")
 	const db = new Database(env.CACHE_DB_PATH)
 
 	try {
@@ -21,7 +21,7 @@ function createDatabase(retry = true): BetterSqlite3.Database {
             metadata TEXT,
             value TEXT
         )`)
-        logger.info('Successfully created cache database')
+		logger.info("Successfully created cache database")
 	} catch (e: unknown) {
 		fs.unlinkSync(env.CACHE_DB_PATH)
 		if (retry) {
@@ -38,7 +38,7 @@ function createDatabase(retry = true): BetterSqlite3.Database {
 export const cache: CachifiedCache = {
 	name: "SQLite Cache",
 	get(key) {
-        logger.debug(`Getting key: ${key} from cache.`)
+		logger.debug(`Getting key: ${key} from cache.`)
 		const result = cacheDb
 			.prepare("SELECT value, metadata FROM cache WHERE key = ?")
 			.get(key)
@@ -53,9 +53,11 @@ export const cache: CachifiedCache = {
 		return entry
 	},
 	set(key, entry) {
-        logger.debug(`Setting key: ${key} with entry: ${entry} to cache.`)
+		logger.debug(`Setting key: ${key} with entry: ${entry} to cache.`)
 		if (!entry.metadata) {
-			logger.error(`Someone's trying to set entry.metadata to null for "${key}"`)
+			logger.error(
+				`Someone's trying to set entry.metadata to null for "${key}"`,
+			)
 			return
 		}
 		cacheDb
@@ -69,7 +71,7 @@ export const cache: CachifiedCache = {
 			})
 	},
 	delete(key) {
-        logger.debug(`Deleting ${key} from cache.`)
+		logger.debug(`Deleting ${key} from cache.`)
 		cacheDb.prepare("DELETE FROM cache WHERE key = ?").run(key)
 	},
 }

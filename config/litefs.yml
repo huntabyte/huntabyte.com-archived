@@ -10,9 +10,24 @@ exit-on-error: false
 
 lease:
   type: 'consul'
-  candidate: ${FLY_REGION == 'iad'}
+  candidate: true
   advertise-url: 'http://${HOSTNAME}.vm.${FLY_APP_NAME}.internal:20202'
-
   consul:
     url: '${FLY_CONSUL_URL}'
     key: 'lifefs/${FLY_APP_NAME}'
+
+
+proxy:
+  # Bind address for the proxy to listen on.
+  # This should match your "services.internal_port" in your fly.toml
+  addr: ":8080"
+
+  # Hostport of your application. You'll need to change the port on your
+  # application so Fly only talks to it through the proxy.
+  target: "localhost:8081"
+
+  # Filename of the SQLite database you want to use for TXID tracking.
+  db: "proxy.sqlite"
+
+  # If true, this enables verbose debug logging for the proxy.
+  debug: false
