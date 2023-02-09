@@ -24,7 +24,6 @@ export const POST: RequestHandler = async ({ request }) => {
 	const body = await request.json()
 
 	let parsedBody: ModifiedContent | null
-	logger.info(`Raw Body:, ${body.data}`)
 
 	try {
 		parsedBody = modifiedContentSchema.parse(body.data)

@@ -288,6 +288,8 @@ export async function refreshChangedContent(modifiedContent: ModifiedContent) {
 		}),
 	)
 
+	await getBlogListItems(refreshOptions)
+
 	logger.info("Finished refreshing changed content")
 
 	return true
