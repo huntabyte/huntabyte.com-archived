@@ -42,6 +42,7 @@ RUN pnpm run build
 
 FROM base as production
 
+ENV FLY_REGION=${FLY_REGION}
 ENV PORT="8081"
 ENV NODE_ENV="production"
 ENV ORIGIN="https://huntabyte.fly.dev"
