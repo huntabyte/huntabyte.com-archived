@@ -1,5 +1,5 @@
 ---
-title: First Article
+title: Seventeenth Cat
 description: A simple description for my first ever article on my blog. Join me as we explore the world of blogging.
 date: 2023-01-25
 updated: 2023-01-25
@@ -7,7 +7,7 @@ updated: 2023-01-25
 draft: false
 unpublished: false
 ---
-Editing the first article!
+
 # This is an H1
 ## This is an H2
 ### This is an H3
