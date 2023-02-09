@@ -6,11 +6,6 @@ const app = express()
 const server = createServer(app)
 
 app.use((req, res, next) => {
-	if (req.query.region) {
-		console.log("Requested region:", req.query.region)
-		res.setHeader("fly-replay", `region=${req.query.region}`)
-		res.redirect(req.originalUrl.split("?")[0])
-	}
 	next()
 })
 

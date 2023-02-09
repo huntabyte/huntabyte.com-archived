@@ -1,7 +1,17 @@
 import type { Handle } from "@sveltejs/kit"
+import { env } from "$env/dynamic/private"
+import { logger } from "$lib/logger"
 
 export const handle: Handle = async ({ event, resolve }) => {
+	logger.info(`Current region:${env.FLY_REGON}`)
+	const requestedRegion = event.request.headers.get("fly-replay")
 	const response = await resolve(event)
+
+	if (requestedRegion) {
+		logger.info(`Requested region: ${requestedRegion}`)
+		response.headers.set("fly-replay", requestedRegion)
+		return Response.redirect(event.url.toString().split("?")[0], 302)
+	}
 
 	response.headers.set("X-Frame-Options", "SAMEORIGIN")
 	response.headers.set("Referrer-Policy", "no-referrer")
