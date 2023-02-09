@@ -12,7 +12,7 @@
         "test:unit": "vitest",
         "lint": "prettier --plugin-search-dir . --check . && eslint .",
         "format": "prettier --plugin-search-dir . --write .",
-        "start": "node build/index.js",
+        "start": "node server/index.js",
         "act:content": "act --insecure-secrets --secret-file .secrets -W .github/workflows/refresh-content.yml",
         "act:deploy": "act --insecure-secrets --secret-file .secrets -W .github/workflows/fly.yml"
     },
@@ -53,6 +53,7 @@
         "better-sqlite3": "^8.1.0",
         "cachified": "^3.1.0",
         "dotenv": "^16.0.3",
+        "express": "^4.18.2",
         "gray-matter": "^4.0.3",
         "morgan": "^1.10.0",
         "reading-time": "^1.5.0",
