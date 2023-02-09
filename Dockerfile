@@ -2,7 +2,7 @@
 FROM node:19-bullseye-slim as base
 
 # Install additional OS dependencies
-RUN apt-get update && apt-get install -y fuse openssl sqlite3 ca-certificates procps python3 make g++
+RUN apt-get update && apt-get install -y fuse3 openssl sqlite3 ca-certificates procps python3 make g++
 RUN npm install -g pnpm
 
 ############################################################################################################
