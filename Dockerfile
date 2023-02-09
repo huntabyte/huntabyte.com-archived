@@ -42,8 +42,8 @@ RUN pnpm run build
 
 FROM base as production
 
-ENV FLY_REGION=${FLY_REGION}
 ENV PORT="8081"
+ENV INTERNAL_PORT="8080"
 ENV NODE_ENV="production"
 ENV ORIGIN="https://huntabyte.fly.dev"
 ENV FLY="true"
@@ -58,7 +58,7 @@ COPY --from=build /app/build /app/build
 
 COPY . .
 
-COPY --from=flyio/litefs:sha-e54bfe3 /usr/local/bin/litefs /usr/local/bin/litefs
+COPY --from=flyio/litefs:sha-9ff02a3 /usr/local/bin/litefs /usr/local/bin/litefs
 COPY litefs.yml /etc/litefs.yml
 RUN mkdir -p /data ${LITEFS_DIR}
 
