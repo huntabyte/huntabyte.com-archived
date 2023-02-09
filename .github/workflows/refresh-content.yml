@@ -1,11 +1,10 @@
 name: Refresh Markdown Content
-on: workflow_dispatch
-  # Comment for local action dev
-  # push:
-  #   branches:
-  #     - main
-  #   paths:
-  #     - content/**
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - content/**
 
 jobs:
   refresh:
