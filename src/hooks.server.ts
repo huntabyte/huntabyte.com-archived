@@ -1,9 +1,7 @@
 import type { Handle } from "@sveltejs/kit"
-import { env } from "$env/dynamic/private"
 import { logger } from "$lib/logger"
 
 export const handle: Handle = async ({ event, resolve }) => {
-	logger.info(`Current region:${env.FLY_REGON}`)
 	const requestedRegion = event.request.headers.get("fly-replay")
 	const response = await resolve(event)
 
