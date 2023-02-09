@@ -11,7 +11,6 @@ app.use((req, res, next) => {
 		res.setHeader("fly-replay", `region=${req.query.region}`)
 		res.redirect(req.originalUrl.split("?")[0])
 	}
-	console.log("Currently in region:", process.env.FLY_REGION)
 	next()
 })
 
