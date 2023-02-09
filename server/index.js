@@ -9,8 +9,9 @@ app.use((req, res, next) => {
 	if (req.query.region) {
 		console.log("Requested region:", req.query.region)
 		res.setHeader("fly-replay", `region=${req.query.region}`)
+	} else {
+		res.removeHeader("fly-replay")
 	}
-	console.log("Currently in region:", process.env.FLY_REGION)
 	next()
 })
 
