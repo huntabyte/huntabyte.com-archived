@@ -20,10 +20,11 @@ export const POST: RequestHandler = async ({ request }) => {
 		return json({ error: "Invalid authorization header" }, { status: 400 })
 	}
 
-    logger.info('Received content changes.')
+	logger.info("Received content changes.")
 	const body = await request.json()
 
 	let parsedBody: ModifiedContent | null
+	logger.info(`Raw Body:, ${body.data}`)
 
 	try {
 		parsedBody = modifiedContentSchema.parse(body.data)
@@ -38,7 +39,6 @@ export const POST: RequestHandler = async ({ request }) => {
 		return json({ message: "Error parsing request body" }, { status: 400 })
 	}
 
-    
 	await refreshChangedContent(parsedBody)
 
 	return json({ message: "success" })
