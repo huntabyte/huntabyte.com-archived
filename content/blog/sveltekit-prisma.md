@@ -1,8 +1,8 @@
 ---
-title: My Site
+title: SvelteKit & Prisma
 description: This is my site
-date: 2023-02-05
-updated: 2023-02-05
+date: 2023-02-08
+updated: 2023-02-08
 
 draft: false
 unpublished: false

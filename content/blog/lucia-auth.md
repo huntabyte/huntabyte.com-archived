@@ -1,18 +1,18 @@
 ---
-title: Fourth Article
-description: A simple description for my Fourth ever article on my blog. Join me as we explore the world of blogging.
-date: 2023-01-25
-updated: 2023-01-25
+title: Lucia Auth with SvelteKit
+description: This is my site
+date: 2023-02-07
+updated: 2023-02-07
 
 draft: false
 unpublished: false
 ---
-eeee
+Wow!
 # This is an H1
 ## This is an H2
 ### This is an H3
 #### This is an H4
-eeeeeeeeknekne
+eee
 This is a numbered list:
 1. One
 2. Two
