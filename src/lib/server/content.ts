@@ -24,6 +24,11 @@ const defaultCacheOptions: CachifiedOptions = {
 	forceFresh: false,
 }
 
+const refreshOptions: CachifiedOptions = {
+	...defaultCacheOptions,
+	forceFresh: true,
+}
+
 async function getRawPageContent(
 	contentDir: string,
 	slug: string,
@@ -139,7 +144,7 @@ async function getCompiledContentList(
 	contentDir: ContentDir,
 	options: CachifiedOptions = defaultCacheOptions,
 ): Promise<PageContent[]> {
-	const contentList = await getContentList(contentDir)
+	const contentList = await getContentList(contentDir, options)
 
 	const rawContentList = await Promise.all(
 		contentList.map(async ({ slug }) => {
@@ -229,7 +234,6 @@ function deleteRenamedContent(renamed: string[], renamedTo: string[]): void {
 		}
 	}
 }
-
 /**
  * @param removed - Array of filepaths that were removed.
  *
@@ -268,11 +272,6 @@ export async function refreshChangedContent(modifiedContent: ModifiedContent) {
 		...modifiedContent.updated,
 	].filter((val) => val !== "")
 
-	const refreshOptions: CachifiedOptions = {
-		forceFresh: true,
-		...defaultCacheOptions,
-	}
-
 	await Promise.allSettled(
 		modifiedAndUpdated.map((fullPath: string) => {
 			const splitPath = fullPath.split("/")
@@ -292,5 +291,36 @@ export async function refreshChangedContent(modifiedContent: ModifiedContent) {
 
 	logger.info("Finished refreshing changed content")
 
+	return true
+}
+
+/**
+ * Refresh cache for all content on the site. This can be used when the app is first
+ * deployed to have the cache populated prior to a user accessing it.
+ *
+ * It can also be used by a site admin to refresh the cache if they have made
+ * changes to the content on GitHub.
+ */
+export async function refreshAllContent() {
+	// Will need to add other content dir types here as well.
+	const result = await getBlogListItems(refreshOptions)
+	if (!result) {
+		return false
+	}
+	return true
+}
+
+/**
+ * Refresh cache for content given the `contentDir` and `slug`.
+ *
+ * This can be used by a site admin to refresh the cache if they have made
+ * changes to the content on GitHub, but something went wrong with the CI/CD
+ * refresh process.
+ */
+export async function adminRefreshContent(contentDir: string, slug: string) {
+	const result = await getCompiledPageContent(contentDir, slug, refreshOptions)
+	if (!result) {
+		return false
+	}
 	return true
 }

@@ -62,7 +62,7 @@ export async function compileMarkdown(
 	markdown: string,
 	slug: string,
 ): Promise<PageContent> {
-    logger.debug(`Compiling markown for "${slug}"`)
+	logger.debug(`Compiling markdown for "${slug}"`)
 	const { content, data } = matter(markdown)
 
 	// manually set the slug to maintain sync with the file name
@@ -78,9 +78,8 @@ export async function compileMarkdown(
 		.use(toHtml)
 		.process(searchAndReplace(content))
 
-    
 	const compiledContent = z.string().parse(result.value)
-    logger.debug(`Compiling markown for "${slug}"`)
+	logger.debug(`Compiling markdown for "${slug}"`)
 	const readTime = readingTime(compiledContent)
 
 	return {
