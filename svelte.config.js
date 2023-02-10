@@ -14,6 +14,9 @@ const config = {
 
 	kit: {
 		adapter: adapter(),
+		csrf: {
+			checkOrigin: true,
+		},
 		// csp: {
 		// 	mode: "hash",
 		// 	directives: cspDirectives,

@@ -45,11 +45,11 @@ FROM base as production
 ENV PORT="8081"
 ENV INTERNAL_PORT="8080"
 ENV NODE_ENV="production"
-ENV ORIGIN="https://huntabyte.fly.dev"
 ENV FLY="true"
 ENV LITEFS_DIR="/litefs"
 ENV CACHE_DB_FILENAME="cache.sqlite"
 ENV CACHE_DB_PATH="/${LITEFS_DIR}/${CACHE_DB_FILENAME}"
+ENV ORIGIN="https://huntabyte.fly.dev"
 
 WORKDIR /app
 

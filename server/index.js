@@ -1,14 +1,12 @@
 import express from "express"
 import { createServer } from "http"
 import { handler } from "../build/handler.js"
-const port = 8081
-const app = express()
-const server = createServer(app)
 
-app.use((req, res, next) => {
-	next()
-})
+const PORT = process.env.PORT
+const app = express()
 
 app.use(handler)
 
-server.listen(port)
+const server = createServer(app)
+
+server.listen(PORT)
