@@ -11,6 +11,7 @@ declare global {
 
 export const cacheDb = global.__cacheDb ? global.__cacheDb : createDatabase()
 
+// Create the database if it doesn't exist
 function createDatabase(retry = true): BetterSqlite3.Database {
 	logger.info("Creating new database")
 	const db = new Database(env.CACHE_DB_PATH)
@@ -35,6 +36,7 @@ function createDatabase(retry = true): BetterSqlite3.Database {
 	return db
 }
 
+// Cache interface
 export const cache: CachifiedCache = {
 	name: "SQLite Cache",
 	get(key) {

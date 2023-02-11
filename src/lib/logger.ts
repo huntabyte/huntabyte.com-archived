@@ -29,9 +29,9 @@ const devFormat = format.combine(
 	),
 )
 
-// Set environment var for setting log level
-// Should also have ability to fallback to a level depending
-// on the NODE_ENV.
+// TODO: Set environment var for setting log level
+// Should also have ability to fallback to a level
+// depending on the NODE_ENV.
 const logger = createLogger({
 	levels: customLevels.levels,
 	level: "debug",
