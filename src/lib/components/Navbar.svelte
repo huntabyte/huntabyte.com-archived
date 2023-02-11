@@ -1,10 +1,10 @@
 <script lang="ts">
 	import Logo from './Logo.svelte'
 	import { page } from '$app/stores'
-	import { navigation } from '$lib/ui/data'
-	import { GitHubIcon, TwitchIcon, YouTubeIcon } from '$lib/components/icons'
+	import { moreNavigation, navigation } from '$lib/ui/data'
+	import { GitHubIcon, TwitchIcon, YouTubeIcon, CaretDownBold } from '$lib/components/icons'
 
-	const activeNavItem = 'text-primary-500'
+	const activeNavItem = 'text-gray-50'
 	const activeMobileNavItem = 'bg-gray-600 text-primary-700 '
 </script>
 
@@ -17,16 +17,41 @@
 						<Logo />
 					</a>
 				</div>
-				<div class="hidden sm:ml-6 sm:flex sm:space-x-6">
+				<div class="hidden sm:ml-6 sm:flex sm:space-x-4 w-full items-center lowercase ">
 					{#each navigation as navItem}
 						<a
 							href={navItem.href}
-							class="inline-flex items-center font-medium text-base hover:text-primary-500 transition-all duration-200 ease-in-out {$page
+							class="inline-flex items-center font-medium text-base hover:opacity-100 transition-all duration-200 ease-in-out {$page
 								.url.pathname === navItem.href
 								? activeNavItem
-								: 'text-gray-50'}">{navItem.label}</a
+								: 'text-gray-50 opacity-70'}">{navItem.label}</a
 						>
 					{/each}
+					<div class="group inline-block relative w-full">
+						<button
+							class="inline-flex items-center font-medium text-base transition-all duration-200 ease-in-out"
+						>
+							<span class="mr-1 lowercase opacity-70">More</span>
+							<span
+								class="group-hover:rotate-180 transition-transform duration-200 group-hover:opacity-100 opacity-70"
+							>
+								<CaretDownBold />
+							</span>
+						</button>
+						<ul class="absolute hidden pt-1 group-hover:block font-medium bg-gray-900">
+							{#each moreNavigation as navItem}
+								<li>
+									<a
+										class="rounded-t py-2 px-4 block whitespace-no-wrap hover:opacity-100 {$page.url
+											.pathname === navItem.href
+											? activeNavItem
+											: 'text-gray-50 opacity-70'}"
+										href={navItem.href}>{navItem.label}</a
+									>
+								</li>
+							{/each}
+						</ul>
+					</div>
 				</div>
 			</div>
 			<div class="flex items-center gap-3">

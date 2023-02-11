@@ -1,6 +1,15 @@
-import YouTubeIcon from "./YouTubeIcon.svelte"
+import ArrowLeft from "./ArrowLeft.svelte"
+import ArrowLeftBold from "./ArrowLeftBold.svelte"
+import CaretDownBold from "./CaretDownBold.svelte"
 import GitHubIcon from "./GitHubIcon.svelte"
 import TwitchIcon from "./TwitchIcon.svelte"
-import ArrowLeft from "./ArrowLeft.svelte"
+import YouTubeIcon from "./YouTubeIcon.svelte"
 
-export { ArrowLeft, GitHubIcon, TwitchIcon, YouTubeIcon }
+export {
+	ArrowLeft,
+	ArrowLeftBold,
+	CaretDownBold,
+	GitHubIcon,
+	TwitchIcon,
+	YouTubeIcon,
+}
