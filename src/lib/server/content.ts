@@ -1,4 +1,7 @@
-import { getMarkdownContentList, getMarkdownContent } from "$lib/server/github"
+import {
+	fetchMarkdownContentList,
+	fetchMarkdownContent,
+} from "$lib/server/github"
 import { cache, cacheDb } from "$lib/server/cache"
 import { compileMarkdown } from "$lib/server/markdown"
 import { cachified } from "cachified"
@@ -11,6 +14,8 @@ import type {
 } from "$lib/types"
 import { blogListItemSchema, pageContentSchema } from "$lib/schemas"
 import { logger } from "$lib/logger"
+import { RequestError } from "@octokit/request-error"
+import { error } from "@sveltejs/kit"
 
 type CachifiedOptions = {
 	ttl?: number
@@ -26,7 +31,7 @@ const defaultCacheOptions: CachifiedOptions = {
 }
 
 // refresh options are used when we want to force a fresh value from the cache
-const refreshOptions: CachifiedOptions = {
+export const refreshOptions: CachifiedOptions = {
 	...defaultCacheOptions,
 	forceFresh: true,
 }
@@ -41,7 +46,7 @@ const refreshOptions: CachifiedOptions = {
  * @param options (optional) - Cachified options. If not provided, default options are used.
  *
  */
-async function getRawPageContent(
+async function cacheRawPageContent(
 	contentDir: string,
 	slug: string,
 	options: CachifiedOptions = defaultCacheOptions,
@@ -55,7 +60,7 @@ async function getRawPageContent(
 		staleWhileRevalidate,
 		forceFresh,
 		checkValue: (value) => value !== null,
-		getFreshValue: async () => getMarkdownContent(`${contentDir}/${slug}`),
+		getFreshValue: async () => fetchMarkdownContent(`${contentDir}/${slug}`),
 	})
 	if (!rawPageContent) {
 		void cache.delete(key)
@@ -74,7 +79,7 @@ async function getRawPageContent(
  * @param options (optional) - Cachified options. If not provided, default options are used.
  *
  */
-export async function getCompiledPageContent(
+export async function cacheCompiledPageContent(
 	contentDir: string,
 	slug: string,
 	options: CachifiedOptions = defaultCacheOptions,
@@ -89,7 +94,11 @@ export async function getCompiledPageContent(
 		forceFresh,
 		checkValue: (value) => value !== null,
 		getFreshValue: async () => {
-			const rawPageContent = await getRawPageContent(contentDir, slug, options)
+			const rawPageContent = await cacheRawPageContent(
+				contentDir,
+				slug,
+				options,
+			)
 
 			const compiledPageContent = await compileMarkdown(
 				rawPageContent,
@@ -124,7 +133,7 @@ export async function getCompiledPageContent(
  * @param contentDir the content directory to list files for
  * Example: "blog" or "snippets"
  */
-async function getContentList(
+async function cacheContentList(
 	contentDir: ContentDir,
 	options: CachifiedOptions = defaultCacheOptions,
 ): Promise<
@@ -145,7 +154,7 @@ async function getContentList(
 		getFreshValue: async () => {
 			const fullContentDirPath = `content/${contentDir}`
 			const rawContentList = (
-				await getMarkdownContentList(fullContentDirPath)
+				await fetchMarkdownContentList(fullContentDirPath)
 			).map(({ name, path }) => ({
 				name,
 				slug: path.replace(`${fullContentDirPath}/`, "").replace(/\.md$/, ""),
@@ -164,16 +173,16 @@ async function getContentList(
  * Given a content directory, gets the compiled page content and metadata for all
  * markdown content within that directory.
  */
-async function getCompiledContentList(
+async function cacheCompiledContentList(
 	contentDir: ContentDir,
 	options: CachifiedOptions = defaultCacheOptions,
 ): Promise<PageContent[]> {
-	const contentList = await getContentList(contentDir, options)
+	const contentList = await cacheContentList(contentDir, options)
 
 	const rawContentList = await Promise.all(
 		contentList.map(async ({ slug }) => {
 			return {
-				markdown: await getRawPageContent(contentDir, slug, options),
+				markdown: await cacheRawPageContent(contentDir, slug, options),
 				slug,
 			}
 		}),
@@ -181,7 +190,7 @@ async function getCompiledContentList(
 
 	const compiledContentList = await Promise.all(
 		rawContentList.map((pageContent) =>
-			getCompiledPageContent(contentDir, pageContent.slug),
+			cacheCompiledPageContent(contentDir, pageContent.slug),
 		),
 	)
 	return compiledContentList.filter(typedBoolean)
@@ -193,7 +202,7 @@ async function getCompiledContentList(
  *
  * Returns a list of cached blog items without the page content.
  */
-export async function getBlogListItems(
+export async function cacheBlogListItems(
 	options: CachifiedOptions = defaultCacheOptions,
 ): Promise<BlogListItem[]> {
 	const { ttl, staleWhileRevalidate, forceFresh } = options
@@ -205,7 +214,7 @@ export async function getBlogListItems(
 		staleWhileRevalidate,
 		forceFresh,
 		getFreshValue: async () => {
-			let postList = await getCompiledContentList("blog", options).then(
+			let postList = await cacheCompiledContentList("blog", options).then(
 				(posts) =>
 					posts.filter(
 						(post) => !(post.frontMatter.draft || post.frontMatter.unpublished),
@@ -232,7 +241,10 @@ export async function getBlogListItems(
  *
  * Determines the previous paths of renamed files and removes them from the cache.
  */
-function deleteRenamedContent(renamed: string[], renamedTo: string[]): void {
+function deleteRenamedContentFromCache(
+	renamed: string[],
+	renamedTo: string[],
+): void {
 	logger.info("Deleting old entries for renamed content")
 	for (const path of renamed) {
 		for (const item of renamedTo) {
@@ -263,7 +275,7 @@ function deleteRenamedContent(renamed: string[], renamedTo: string[]): void {
  *
  * Deletes removed content from the cache.
  */
-async function deleteRemovedContent(removed: string[]) {
+async function deleteRemovedContentFromCache(removed: string[]) {
 	for (const path of removed) {
 		const [contentDir, slug] = path.split("/")
 		const keys = [`${contentDir}:${slug}:raw`, `${contentDir}:${slug}:compiled`]
@@ -288,8 +300,11 @@ async function deleteRemovedContent(removed: string[]) {
  */
 export async function refreshChangedContent(modifiedContent: ModifiedContent) {
 	logger.info("Refreshing changed content")
-	void deleteRenamedContent(modifiedContent.renamed, modifiedContent.renamedTo)
-	void deleteRemovedContent(modifiedContent.deleted)
+	void deleteRenamedContentFromCache(
+		modifiedContent.renamed,
+		modifiedContent.renamedTo,
+	)
+	void deleteRemovedContentFromCache(modifiedContent.deleted)
 
 	const modifiedAndUpdated = [
 		...modifiedContent.renamed,
@@ -301,7 +316,7 @@ export async function refreshChangedContent(modifiedContent: ModifiedContent) {
 			const splitPath = fullPath.split("/")
 			const contentDir = splitPath[0]
 			const slug = splitPath[1]
-			return getCompiledPageContent(contentDir, slug, refreshOptions)
+			return cacheCompiledPageContent(contentDir, slug, refreshOptions)
 		}),
 	).then((results) =>
 		results.forEach((result) => {
@@ -311,7 +326,7 @@ export async function refreshChangedContent(modifiedContent: ModifiedContent) {
 		}),
 	)
 
-	await getBlogListItems(refreshOptions)
+	await refreshAllCachedContent()
 
 	logger.info("Finished refreshing changed content")
 
@@ -325,9 +340,9 @@ export async function refreshChangedContent(modifiedContent: ModifiedContent) {
  * It can also be used by a site admin to refresh the cache if they have made
  * changes to the content on GitHub.
  */
-export async function refreshAllContent() {
+export async function refreshAllCachedContent() {
 	// Will need to add other content dir types here as well.
-	const result = await getBlogListItems(refreshOptions)
+	const result = await cacheBlogListItems(refreshOptions)
 	if (!result) {
 		return false
 	}
@@ -341,10 +356,41 @@ export async function refreshAllContent() {
  * changes to the content on GitHub, but something went wrong with the CI/CD
  * refresh process.
  */
-export async function adminRefreshContent(contentDir: string, slug: string) {
-	const result = await getCompiledPageContent(contentDir, slug, refreshOptions)
-	if (!result) {
-		return false
+export async function refreshCacheContent(contentDir: string, slug: string) {
+	const result = await cacheCompiledPageContent(
+		contentDir,
+		slug,
+		refreshOptions,
+	)
+	return result
+}
+
+// Load function interface with the cache to catch and throw errors that a user can see.
+export async function getPageContent(contentDir: string, slug: string) {
+	try {
+		const result = await cacheCompiledPageContent(contentDir, slug)
+		return result
+	} catch (e) {
+		if (e instanceof RequestError && e.status === 404) {
+			logger.warn(`Article ${contentDir}/${slug} not found.`)
+			throw error(404, "Article not found.")
+		}
+		logger.error(
+			`An unexpected error occurred while getting page content for ${contentDir}/${slug}.`,
+		)
+		logger.error(e)
+		throw error(500, "An unexpected error occurred. We're looking into it.")
 	}
-	return true
+}
+
+// Load function interface with the cache to catch and throw errors that a user can see.
+export async function getBlogListItems() {
+	try {
+		const result = await cacheBlogListItems()
+		return result
+	} catch (e) {
+		logger.error("An unexpected error occurred while getting blog post list.")
+		logger.error(e)
+		throw error(500, "An unexpected error occurred. We're looking into it.")
+	}
 }

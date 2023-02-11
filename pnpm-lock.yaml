@@ -2,6 +2,7 @@ lockfileVersion: 5.4
 
 specifiers:
   '@octokit/plugin-throttling': ^5.0.1
+  '@octokit/request-error': ^3.0.3
   '@octokit/rest': ^19.0.7
   '@playwright/test': ^1.30.0
   '@sveltejs/adapter-auto': ^1.0.3
@@ -54,6 +55,7 @@ specifiers:
 
 dependencies:
   '@octokit/plugin-throttling': 5.0.1_@octokit+core@4.2.0
+  '@octokit/request-error': 3.0.3
   '@octokit/rest': 19.0.7
   '@types/morgan': 1.9.4
   better-sqlite3: 8.1.0

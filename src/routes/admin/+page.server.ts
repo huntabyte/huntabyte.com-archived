@@ -1,7 +1,10 @@
 import type { Actions, PageServerLoad } from "./$types"
 import { env } from "$env/dynamic/private"
 import { error, fail } from "@sveltejs/kit"
-import { adminRefreshContent, refreshAllContent } from "$lib/server/content"
+import {
+	refreshCacheContent,
+	refreshAllCachedContent,
+} from "$lib/server/content"
 import { logger } from "$lib/logger"
 
 export const load: PageServerLoad = async ({ request }) => {
@@ -23,11 +26,15 @@ export const actions: Actions = {
 		const { contentDir, slug } = Object.fromEntries(
 			await request.formData(),
 		) as Record<string, string>
-		const result = await adminRefreshContent(contentDir, slug)
-		if (!result) {
-			logger.error("Could not refresh content")
-			return fail(500, { message: "Could not refresh content" })
+
+		try {
+			await refreshCacheContent(contentDir, slug)
+		} catch (e) {
+			logger.error(`Could not refresh ${contentDir}/${slug}`)
+			logger.error(e)
+			return fail(500, { message: `Could not refresh ${contentDir}/${slug}` })
 		}
+
 		logger.info(`Refreshed ${contentDir}/${slug}`)
 		return {
 			success: true,
@@ -39,12 +46,14 @@ export const actions: Actions = {
 		if (token !== env.ADMIN_TOKEN) {
 			throw error(401, "Unauthorized")
 		}
-		const result = await refreshAllContent()
-		if (!result) {
-			logger.error("Could not refresh content")
-			return fail(500, { message: "Could not refresh content" })
+		try {
+			await refreshAllCachedContent()
+		} catch (e) {
+			logger.error("Could not refresh all content")
+			logger.error(e)
+			return fail(500, { message: "Could not refresh all content" })
 		}
-		logger.info("Refreshed all content")
+		logger.info("Successfully refreshed all content")
 		return {
 			success: true,
 		}
