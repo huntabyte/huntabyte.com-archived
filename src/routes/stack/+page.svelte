@@ -6,8 +6,8 @@
 <PageWrapper>
 	<PageHeading>
 		<h1 slot="heading" class="text-4xl font-semibold">Tech Stack</h1>
-		<p slot="subheading" class="mx-auto max-w-lg text-gray-100 pt-2 text-base text-center">
-			Coming soon!
+		<p slot="subheading" class="mx-auto max-w-md text-gray-100 pt-2 text-lg text-center">
+			What I use on a regular basis to build application and create content.
 		</p>
 	</PageHeading>
 </PageWrapper>

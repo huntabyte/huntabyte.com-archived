@@ -11,10 +11,10 @@
 		<div class="mx-auto px-6">
 			<div class="text-center">
 				<p class="font-semibold text-4xl">Writing</p>
-				<p class="mx-auto max-w-lg text-gray-100 pt-2">
+				<p class="mx-auto max-w-md text-lg text-gray-100 pt-2 whitespace-nowrap">
 					<em> "You can make anything by writing" </em>
 					<br />
-					-C.S. Lewis
+					<span class="text-base"> -C.S. Lewis </span>
 				</p>
 			</div>
 		</div>

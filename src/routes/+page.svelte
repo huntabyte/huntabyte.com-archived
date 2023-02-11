@@ -9,8 +9,8 @@
 	<div class="flex items-center gap-4 pb-2">
 		<div>
 			<img
-				class="inline-block h-20 w-20 rounded-full"
-				src="https://avatars.githubusercontent.com/u/64506580?v=4"
+				class="inline-block h-24 w-24 rounded-full"
+				src="https://res.cloudinary.com/dgytdtcft/image/upload/v1676135897/huntabyte_scu8lo.jpg"
 				alt=""
 			/>
 		</div>

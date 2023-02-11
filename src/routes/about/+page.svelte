@@ -3,10 +3,10 @@
 		<div class="mx-auto px-6">
 			<div class="text-center">
 				<p class="font-semibold text-4xl">About</p>
-				<p class="mx-auto max-w-lg text-gray-100 pt-2">
+				<p class="mx-auto max-w-md text-lg text-gray-100 pt-2 whitespace-nowrap">
 					<em> "Make the most of yourself....for that is all there is of you." </em>
 					<br />
-					-Ralph Waldo Emerson
+					<span class="text-base"> -Ralph Waldo Emerson </span>
 				</p>
 			</div>
 		</div>
