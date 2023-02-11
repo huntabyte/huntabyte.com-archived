@@ -2,6 +2,7 @@
 	import Logo from './Logo.svelte'
 	import { page } from '$app/stores'
 	import { navigation } from '$lib/ui/data'
+	import { GitHubIcon, TwitchIcon, YouTubeIcon } from '$lib/components/icons'
 
 	const activeNavItem = 'text-primary-500'
 	const activeMobileNavItem = 'bg-gray-600 text-primary-700 '
@@ -10,7 +11,7 @@
 <nav class="bg-inherit">
 	<div class="mx-auto max-w-7xl py-2">
 		<div class="relative flex h-16 justify-between">
-			<div class="flex flex-1 items-center justify-between">
+			<div class="flex flex-1 items-center">
 				<div class="flex flex-shrink-0 items-center">
 					<a href="/" class="w-8 flex items-center text-gray-50">
 						<Logo />
@@ -27,6 +28,32 @@
 						>
 					{/each}
 				</div>
+			</div>
+			<div class="flex items-center gap-3">
+				<a
+					href="https://youtube.com/@huntabyte"
+					target="_blank"
+					rel="noreferrer"
+					class="hover:text-gray-400 transition-all duration-200 ease-in-out"
+				>
+					<YouTubeIcon />
+				</a>
+				<a
+					href="https://github.com/huntabyte"
+					target="_blank"
+					rel="noreferrer"
+					class="hover:text-gray-400 transition-all duration-200 ease-in-out"
+				>
+					<GitHubIcon />
+				</a>
+				<a
+					href="https://twitch.tv/huntabyte"
+					target="_blank"
+					rel="noreferrer"
+					class="hover:text-gray-400 transition-all duration-200 ease-in-out"
+				>
+					<TwitchIcon />
+				</a>
 			</div>
 		</div>
 	</div>
