@@ -17,7 +17,7 @@ async function exec(command, options) {
 	})
 }
 try {
-	await exec(`ORIGIN=https://huntabyte.fly.dev node server/index.js`)
+	await exec("ORIGIN=https://huntabyte.fly.dev node server/index.js")
 } catch (err) {
 	process.exit(1)
 }
