@@ -11,6 +11,7 @@ import type {
 } from "$lib/types"
 import { blogListItemSchema, pageContentSchema } from "$lib/schemas"
 import { logger } from "$lib/logger"
+import { shortDate } from "../utils"
 
 type CachifiedOptions = {
 	ttl?: number
