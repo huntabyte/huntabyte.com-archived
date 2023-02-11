@@ -2,7 +2,8 @@
 	import Logo from './Logo.svelte'
 	import { page } from '$app/stores'
 	import { moreNavigation, navigation } from '$lib/ui/data'
-	import { GitHubIcon, TwitchIcon, YouTubeIcon, CaretDownBold } from '$lib/components/icons'
+	import { GitHubIcon, YouTubeIcon, CaretDownBold } from '$lib/components/icons'
+	import DiscordIcon from './icons/DiscordIcon.svelte'
 
 	const activeNavItem = 'text-gray-50'
 	const activeMobileNavItem = 'bg-gray-600 text-primary-700 '
@@ -72,12 +73,12 @@
 					<GitHubIcon />
 				</a>
 				<a
-					href="https://twitch.tv/huntabyte"
+					href="https://hbyt.us/discord"
 					target="_blank"
 					rel="noreferrer"
 					class="hover:text-gray-400 transition-all duration-200 ease-in-out"
 				>
-					<TwitchIcon />
+					<DiscordIcon />
 				</a>
 			</div>
 		</div>
