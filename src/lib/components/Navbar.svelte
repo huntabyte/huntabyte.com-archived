@@ -12,7 +12,7 @@
 	<div class="mx-auto max-w-7xl py-2">
 		<div class="relative flex h-16 justify-between">
 			<div class="flex flex-1 items-center">
-				<div class="flex flex-shrink-0 items-center">
+				<div class="flex flex-shrink-0 items-center mr-2">
 					<a href="/" class="w-8 flex items-center text-gray-50">
 						<Logo />
 					</a>
