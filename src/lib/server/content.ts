@@ -11,7 +11,6 @@ import type {
 } from "$lib/types"
 import { blogListItemSchema, pageContentSchema } from "$lib/schemas"
 import { logger } from "$lib/logger"
-import { shortDate } from "../utils"
 
 type CachifiedOptions = {
 	ttl?: number
@@ -19,17 +18,29 @@ type CachifiedOptions = {
 	staleWhileRevalidate?: number
 }
 
+// default cache options are used when we want to get the value from the cache if it exists
 const defaultCacheOptions: CachifiedOptions = {
 	ttl: 1000 * 60 * 60 * 24 * 14,
 	staleWhileRevalidate: 1000 * 60 * 60 * 24 * 30,
 	forceFresh: false,
 }
 
+// refresh options are used when we want to force a fresh value from the cache
 const refreshOptions: CachifiedOptions = {
 	...defaultCacheOptions,
 	forceFresh: true,
 }
 
+/**
+ * Given a content directory and a slug, gets the raw markdown content from the cache..
+ *
+ * @param contentDir the content directory where the page content is located
+ * Example: "blog" or "snippets"
+ * @param slug the slug of the page to get compiled content for
+ * Example: "my-first-blog-post"
+ * @param options (optional) - Cachified options. If not provided, default options are used.
+ *
+ */
 async function getRawPageContent(
 	contentDir: string,
 	slug: string,
@@ -52,6 +63,17 @@ async function getRawPageContent(
 	return rawPageContent
 }
 
+/**
+ * Given a content directory and a slug, gets the compiled page content and metadata for that
+ * markdown content from the cache.
+ *
+ * @param contentDir the content directory where the page content is located
+ * Example: "blog" or "snippets"
+ * @param slug the slug of the page to get compiled content for
+ * Example: "my-first-blog-post"
+ * @param options (optional) - Cachified options. If not provided, default options are used.
+ *
+ */
 export async function getCompiledPageContent(
 	contentDir: string,
 	slug: string,
@@ -97,6 +119,7 @@ export async function getCompiledPageContent(
 }
 
 /**
+ * Given a content directory get a list of all the content for that directory.
  *
  * @param contentDir the content directory to list files for
  * Example: "blog" or "snippets"
