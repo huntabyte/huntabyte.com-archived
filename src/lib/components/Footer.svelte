@@ -2,7 +2,7 @@
 	import { navigation } from '$lib/ui/data'
 </script>
 
-<div class="py-16 flex flex-col mx-auto w-full items-center gap-4">
+<div class="pt-16 py-8 flex flex-col mx-auto w-full items-center gap-4">
 	<p>© huntabyte / hunter johnston</p>
 	<ul class="flex items-center gap-4 w-full justify-center">
 		{#each navigation as navItem}
