@@ -8,17 +8,22 @@ draft: false
 unpublished: false
 ---
 
-We've all been there. You've just finished filling out an annoyingly long form. Because you always read the terms and conditions, you click a link to read them. But wait, the link didn't open in a new tab. Instead, you've lost all your form data and have to start over. SvelteKit's latest feature, Snapshots, solve this exact problem.
+We've all been there. You've just finished filling out an annoyingly long form. Because you always read the terms and conditions, you click a link to read them. But wait, the link didn't open in a new tab. Instead, you've lost all your form data and have to start over.
+
+SvelteKit's latest feature, Snapshots, solve this exact problem.
 
 If you prefer to watch a video, you can check out the video version of this post here: [SvelteKit Snapshots](https://youtu.be/UJ3JtNIifR8).
-
 ## What are Snapshots?
-Snapshots are a way to preserve some ephemeral DOM state when a user navigates away from a page. This is useful for preserving the state of a form, for example, so that when the user navigates back to the page, the form is in the same state as when they left it. If you're like me and didn't pay attention in English class, ephemeral means "lasting for a short period." So snapshots should not be viewed as a long-term storage solution for your app's state.
+Snapshots are a way to preserve some ephemeral DOM state when a user navigates away from a page.
+
+This is useful for preserving the state of a form, for example, so that when the user navigates back to the page, the form is in the same state as when they left it.
+
+If you're like me and didn't pay attention in English class, ephemeral means "lasting for a short period", so snapshots should not be viewed as a long-term storage solution for your app's state.
 
 
 ## How do I use Snapshots?
 ### Identifying Data to Preserve
-To use snapshots, we need to identify which data we want to preserve.
+To use snapshots, we first need to identify which data we want to preserve.
 
 Let's say we have the following form:
 
