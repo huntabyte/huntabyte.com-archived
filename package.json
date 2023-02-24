@@ -60,7 +60,6 @@
         "reading-time": "^1.5.0",
         "rehype-autolink-headings": "^6.1.1",
         "rehype-code-titles": "^1.2.0",
-        "rehype-prism-plus": "^1.5.1",
         "rehype-raw": "^6.1.1",
         "rehype-stringify": "^9.0.3",
         "remark-autolink-headings": "^7.0.1",

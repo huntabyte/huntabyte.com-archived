@@ -14,7 +14,6 @@ import remarkSlug from "remark-slug"
 import remarkHeadings from "remark-autolink-headings"
 import remarkSmartyPants from "remark-smartypants"
 import rehypeCodeTitles from "rehype-code-titles"
-import rehypePrism from "rehype-prism-plus"
 
 import { z } from "zod"
 
@@ -72,10 +71,12 @@ export async function compileMarkdown(
 	const result = await unified()
 		.use(fromMarkdown)
 		.use([remarkGfm, remarkHeadings, remarkSlug, remarkSmartyPants])
-		.use(remarkTwoslash, { theme: "github-dark" })
+		.use(remarkTwoslash, {
+			theme: "github-dark",
+			langs: ["typescript", "svelte", "prisma"],
+		})
 		.use(fromMarkdownToHtml, { allowDangerousHtml: true })
 		.use(rehypeCodeTitles)
-		.use(rehypePrism)
 		.use(parseHtmlAndMarkdown)
 		.use(toHtml)
 		.process(searchAndReplace(content))
