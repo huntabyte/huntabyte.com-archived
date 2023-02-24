@@ -34,8 +34,7 @@ It's expected because you're explicitly telling SvelteKit that you want to throw
 
 For example, let's say we have a user profile page with a `[username]` route param. If someone tries to access the profile of a user that doesn't exist, we can throw a 404 error.
 
-```ts
-// src/routes/[username]/+page.server.ts
+```ts title="src/routes/[username]/+page.server.**ts**"
 
 import { error } from '@sveltejs/kit'
 import type { PageServerLoad } from './$types'
@@ -63,9 +62,7 @@ throw error(404, { message: 'User not found', code: 'NOT_FOUND' })
 
 However, if we decide to add additional properties to the error object that we throw, we'll need to add type defintions for those properties.
 
-```ts
-// src/app.d.ts
-
+```ts title="src/app.d.ts"
 declare global {
 	namespace App {
 		interface Error {
@@ -96,8 +93,7 @@ By default, when an error occurs, SvelteKit renders a default error page, which 
 
 We can customize the appearance of this page by creating a `+error.svelte` file at the top of the *routes* directly.
 
-```html
-<!-- src/routes/+error.svelte -->
+```html title="src/routes/+error.svelte"
 <script lang="ts">
     import { page } from '$app/stores'
 </script>
@@ -169,15 +165,13 @@ The `handleError` hook is a function that is called whenever an unexpected error
 
 We can add the `handleError` hook to both the client and server, by adding it to the `hooks.server.ts` & `hooks.client.ts` files.
 
-```ts
-// src/hooks.server.ts
+```ts title="src/hooks.server.ts"
 import type { HandleServerError } from '@sveltejs/kit'
 
 export const handleError: HandleServerError = async ({ error, event }) => {}
 ```
 
-```ts
-// src/hooks.client.ts
+```ts title="src/hooks.client.ts"
 import type { HandleClientError } from '@sveltejs/kit'
 
 export const handleError: HandleClientError = async ({ error, event }) => {}
@@ -203,8 +197,7 @@ npm install @sentry/node @sentry/svelte
 ### Configuring Sentry
 Now that those packages are installed, we are ready to initialize Sentry in both the `hooks.server.ts` and `hooks.client.ts` files.
 
-```ts
-// src/hooks.server.ts
+```ts title="src/hooks.server.ts"
 import * as SentryNode from '@sentry/node'
 import crypto from 'crypto'
 import type { HandleServerError } from '@sveltejs/kit'
@@ -233,8 +226,7 @@ export const handleError: HandleServerError = ({ error, event }) => {
 }
 ```
 
-```ts
-// src/hooks.client.ts
+```ts title="src/hooks.client.ts"
 import * as SentryNode from '@sentry/node'
 import type { HandleClientError } from '@sveltejs/kit'
 

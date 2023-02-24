@@ -56,7 +56,7 @@ pnpm i lucia-auth @lucia-auth/sveltekit @lucia-auth/adapter-prisma
 
 Next, we'll need to add the necessary auth tables to our database schema, and if we checkout the [Lucia documentation](https://lucia-auth.vercel.app/learn/adapters/prisma), we can see that we need the following models in our prisma schema.
 
-```prisma
+```prisma title="prisma/schema.prisma"
 model User {
     id        String      @id @unique
 	username  String      @unique
@@ -69,7 +69,7 @@ This is our user model, which we can add our own custom columns to if we'd like,
 
 We'll be using `username` to login, and `name` to display the user's name in the app.
 
-```prisma
+```prisma title="prisma/schema.prisma"
 model Session {
   id             String @id @unique
   user_id        String
@@ -83,7 +83,7 @@ model Session {
 ```
 This is our session model, which is used to store the user's session data. We'll be using the `user_id` column to link the session to the user.
 
-```prisma
+```prisma title="prisma/schema.prisma"
 model Key {
   id              String  @id @unique
   hashed_password String?
@@ -108,8 +108,7 @@ Now that we have our database schema setup, we can start configuring Lucia.
 ## Initialize Lucia
 Let's start by creating a new file in our `src/lib/server` directory called `lucia.ts`. This is where we'll initialize Lucia.
 
-```ts
-// lib/server/lucia.ts
+```ts title="lib/server/lucia.ts"
 import lucia from 'lucia-auth'
 import prismaAdapter from '@lucia-auth/adapter-prisma'
 import { dev } from '$app/environment'
@@ -138,8 +137,7 @@ Now that we've initialized Lucia, we can start to integrate it with our SvelteKi
 ## Add Lucia to SvelteKit
 Lucia provides a a function called `handleHooks` that we need to use, which sets some methods in our `locals`  and handles requests to Lucia's endpoints. In the most simple form, it looks like this:
 
-```typescript
-// hooks.server.ts
+```typescript title="hooks.server.ts"
 import { auth } from "$lib/server/lucia"
 import { handleHooks } from "@lucia-auth/sveltekit"
 import type { Handle } from "@sveltejs/kit"
@@ -151,7 +149,7 @@ But typescript is yelling at us, and that's because this `handleHooks` function 
 
 We first need to set `interface Locals` to the following, which are the three methods that the `handleHooks` function sets on our locals object.
 
-```typescript
+```typescript title="app.d.ts"
 interface Locals {
 	validate: import("@lucia-auth/sveltekit").Validate
 	validateUser: import("@lucia-auth/sveltekit").ValidateUser
@@ -161,7 +159,7 @@ interface Locals {
 
 While we're here, we might as well setup the *Lucia* namespace to get typesafety on our Lucia `auth` object.
 
-```typescript
+```typescript title="app.d.ts"
 /// <reference types="lucia-auth" />
 declare namespace Lucia {
 	type Auth = import("$lib/server/lucia").Auth
@@ -173,8 +171,7 @@ declare namespace Lucia {
 ```
 
 The entire `app.d.ts` file should look like this:
-```typescript
-// app.d.ts
+```typescript title="app.d.ts"
 import type { PrismaClient } from "@prisma/client"
 
 declare global {
@@ -205,8 +202,7 @@ Now when we check our `hooks.server.ts` file, we no longer have TypeScript error
 
 So what I like to do is set this up now so it is here when I need it. Just make sure that `handleHooks(auth)` comes before your custom handle.
 
-```typescript
-// hooks.server.ts
+```typescript title="hooks.server.ts"
 import { auth } from "$lib/server/lucia"
 import { handleHooks } from "@lucia-auth/sveltekit"
 import type { Handle } from "@sveltejs/kit"
@@ -225,8 +221,7 @@ We'll start in the `routes/register/+page.server.ts` file.
 
 Logged in users shouldn't be able to register for an account, so lets add a check that redirects users with a valid session to the homepage. `locals.validate()` returns a Promise that resolves to either a *Session* or *null*. If session is *not* `null`, we will redirect them.
 
-```typescript
-// src/routes/register/+page.server.ts
+```typescript title="routes/register/+page.server.ts"
 export const load: PageServerLoad = async ({ locals }) => {
     const session = await locals.validate()
     if (session) {
