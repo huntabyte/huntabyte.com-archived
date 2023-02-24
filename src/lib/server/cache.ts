@@ -62,6 +62,7 @@ export const cache: CachifiedCache = {
 			)
 			return
 		}
+		cacheDb.prepare("DELETE FROM cache WHERE key = ?").run(key)
 		cacheDb
 			.prepare(
 				"INSERT OR REPLACE INTO cache (key, value, metadata) VALUES (@key, @value, @metadata)",
