@@ -12,3 +12,8 @@ body {
 body {
 	@apply bg-gray-900 text-gray-50;
 }
+
+/** Don't show the language identifiers */
+pre.shiki .language-id {
+	display: none;
+}
