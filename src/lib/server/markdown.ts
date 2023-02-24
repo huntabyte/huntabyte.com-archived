@@ -97,7 +97,6 @@ export async function compileMarkdown(
 
 	const compiledContent = z.string().parse(result.value)
 	logger.debug(`Compiled markdown for "${slug}"`)
-	logger.info(compiledContent)
 	const readTime = readingTime(compiledContent)
 
 	return {
