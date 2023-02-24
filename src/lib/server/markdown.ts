@@ -73,7 +73,7 @@ export async function compileMarkdown(
 		.use([remarkGfm, remarkHeadings, remarkSlug, remarkSmartyPants])
 		.use(remarkTwoslash, {
 			theme: "github-dark",
-			langs: ["typescript", "svelte", "prisma"],
+			langs: ["typescript", "svelte", "prisma", "html", "css"],
 		})
 		.use(fromMarkdownToHtml, { allowDangerousHtml: true })
 		.use(rehypeCodeTitles)

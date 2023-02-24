@@ -27,7 +27,7 @@ To use snapshots, we first need to identify which data we want to preserve.
 
 Let's say we have the following form:
 
-```html
+```svelte
 <form>
     <input type="text" name="firstName" />
     <input type="text" name="lastName" />
@@ -38,7 +38,7 @@ Let's say we have the following form:
 
 We can preserve the state of this form by defining an object with properties that match the input names, like so:
 
-```html
+```svelte
 <script lang="ts">
     let formValues = {
         firstName: '',
@@ -57,7 +57,7 @@ We can preserve the state of this form by defining an object with properties tha
 
 Then, we can bind the values of the inputs to the properties of the `formValues` object:
 
-```html
+```svelte
 <script lang="ts">
     let formValues = {
         firstName: '',
@@ -93,7 +93,7 @@ So how do we use snapshots to preserve the state of our form?
 
 We can use the `create` function to return the values of the `formValues` object and the `restore` function to set the values of the `formValues` object to the values returned from the `create` function.
 
-```html
+```svelte
 <script lang="ts">
     import type { Snapshot } from './$types'
 
