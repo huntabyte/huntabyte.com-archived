@@ -6,6 +6,7 @@ import parseHtmlAndMarkdown from "rehype-raw"
 import toHtml from "rehype-stringify"
 import matter from "gray-matter"
 import readingTime from "reading-time"
+import remarkTwoslash from "remark-shiki-twoslash"
 
 // plugins
 import remarkGfm from "remark-gfm"
@@ -71,6 +72,7 @@ export async function compileMarkdown(
 	const result = await unified()
 		.use(fromMarkdown)
 		.use([remarkGfm, remarkHeadings, remarkSlug, remarkSmartyPants])
+		.use(remarkTwoslash, { theme: "github-dark" })
 		.use(fromMarkdownToHtml, { allowDangerousHtml: true })
 		.use(rehypeCodeTitles)
 		.use(rehypePrism)
