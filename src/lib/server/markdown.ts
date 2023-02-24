@@ -70,11 +70,19 @@ export async function compileMarkdown(
 
 	const result = await unified()
 		.use(fromMarkdown)
-		.use([remarkGfm, remarkHeadings, remarkSlug, remarkSmartyPants])
-		.use(remarkTwoslash, {
-			theme: "github-dark",
-			langs: ["typescript", "svelte", "prisma", "html", "css"],
-		})
+		.use([
+			[
+				remarkTwoslash,
+				{
+					theme: "github-dark",
+					langs: ["typescript", "svelte", "prisma", "html", "css", "bash"],
+				},
+			],
+			remarkGfm,
+			remarkHeadings,
+			remarkSlug,
+			remarkSmartyPants,
+		])
 		.use(fromMarkdownToHtml, { allowDangerousHtml: true })
 		.use(rehypeCodeTitles)
 		.use(parseHtmlAndMarkdown)
@@ -82,7 +90,8 @@ export async function compileMarkdown(
 		.process(searchAndReplace(content))
 
 	const compiledContent = z.string().parse(result.value)
-	logger.debug(`Compiling markdown for "${slug}"`)
+	logger.debug(`Compiled markdown for "${slug}"`)
+	logger.info(compiledContent)
 	const readTime = readingTime(compiledContent)
 
 	return {
