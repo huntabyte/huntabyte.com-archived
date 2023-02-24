@@ -6,7 +6,7 @@ import parseHtmlAndMarkdown from "rehype-raw"
 import toHtml from "rehype-stringify"
 import matter from "gray-matter"
 import readingTime from "reading-time"
-import remarkTwoslash from "remark-shiki-twoslash"
+import remarkTwoslashImport from "remark-shiki-twoslash"
 
 // plugins
 import remarkGfm from "remark-gfm"
@@ -20,6 +20,12 @@ import { z } from "zod"
 import type { PageContent } from "$lib/types"
 import { frontMatterSchema, readingTimeSchema } from "$lib/schemas"
 import { logger } from "$lib/logger"
+
+const remarkTwoslash: typeof remarkTwoslashImport =
+	typeof remarkTwoslashImport === "function"
+		? remarkTwoslashImport
+		: // rome-ignore lint/suspicious/noExplicitAny: <explanation>
+		  (remarkTwoslashImport as any).default
 
 // TODO: Add link to source - need to think about S3, CF, or Cloudinary for this.
 function searchAndReplace(content: string): string {
