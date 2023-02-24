@@ -190,7 +190,7 @@ async function cacheCompiledContentList(
 
 	const compiledContentList = await Promise.all(
 		rawContentList.map((pageContent) =>
-			cacheCompiledPageContent(contentDir, pageContent.slug),
+			cacheCompiledPageContent(contentDir, pageContent.slug, options),
 		),
 	)
 	return compiledContentList.filter(typedBoolean)
