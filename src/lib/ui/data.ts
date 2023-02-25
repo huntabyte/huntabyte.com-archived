@@ -6,8 +6,37 @@ export const navigation = [
 ]
 
 export const moreNavigation = [
-	{ label: "Supporters", href: "/supporters" },
 	{ label: "Tech Stack", href: "/stack" },
 	{ label: "Bookshelf", href: "/bookshelf" },
 	{ label: "Stats", href: "/" },
+]
+
+export const supporters = [
+	"Kevin MacKenzie",
+	"Toef",
+	"John",
+	"toHodakiLLa",
+	"Nick",
+	"Haseeb",
+	"Waldemar",
+	"Beganovich",
+	"Quvee",
+	"Charles",
+	"tgodkev",
+	"BANANRO187",
+	"Brad",
+	"Nicholas Alexnader",
+	"Paulina Machaj",
+	"Sebastian Inman",
+	"Alex Ponoran",
+	"Mike Williams",
+	"Ed Anisko",
+	"Mask Man",
+	"Adnan Smajlovic",
+	"Leon Sommers",
+	"Sean Kealy",
+	"Michael Madruga",
+	"Dale Herva",
+	"Stan",
+	"Luminox",
 ]
