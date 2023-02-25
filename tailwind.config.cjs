@@ -104,7 +104,7 @@ const config = {
 							fontWeight: "500",
 						},
 						h3: {
-							color: theme("colors.secondary.500"),
+							color: theme("colors.accent.300"),
 							fontWeight: "500",
 						},
 						h4: {

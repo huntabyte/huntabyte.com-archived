@@ -72,7 +72,11 @@ Then, we can bind the values of the inputs to the properties of the `formValues`
     <input type="email" name="email" bind:value={formValues.email} />
 </form>
 ```
-Now, whenever we type into the inputs, the values of the `formValues` object will be updated. But what if we navigate away from the page? Currently, the values of the `formValues` object will be reset to their initial values. To preserve the state of the form, we need to use a snapshot.
+Now, whenever we type into the inputs, the values of the `formValues` object will be updated.
+
+But what if we navigate away from the page? 
+
+Currently, the values of the `formValues` object will be reset to their initial values. To preserve the state of the form, we need to use a snapshot.
 
 ### Snapshot Object
 The SvelteKit `Snapshot` object looks like this:
@@ -93,7 +97,7 @@ So how do we use snapshots to preserve the state of our form?
 
 We can use the `create` function to return the values of the `formValues` object and the `restore` function to set the values of the `formValues` object to the values returned from the `create` function.
 
-```svelte
+```svelte title="+page.svelte"
 <script lang="ts">
     import type { Snapshot } from './$types'
 
@@ -112,5 +116,7 @@ We can use the `create` function to return the values of the `formValues` object
 ```
 Now, when we navigate away from the page, the values of the `formValues` object will be preserved. When we navigate back to the page, the values of the `formValues` object will be restored.
 
-## Conclusion
-Snapshots are a great way to preserve the state of your app's DOM. If you want to check the PR that added this feature, you can find it here: [#8710](https://github.com/sveltejs/kit/pull/8710).
+## Summary
+Snapshots are a great way to preserve state for use cases like forms, object positions, and more.
+
+If you want to check the PR that added this feature, you can find it here: [#8710](https://github.com/sveltejs/kit/pull/8710).
