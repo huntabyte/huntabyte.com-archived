@@ -47,7 +47,7 @@ function searchAndReplace(content: string): string {
 			return `
         <video controls>
           <source
-            src=""
+            src="${src}"
             type="video/mp4"
           />
         </video>
@@ -56,7 +56,7 @@ function searchAndReplace(content: string): string {
 		.replace(images, (_, src, alt) => {
 			return `
       <img
-        src=""
+        src="${src}"
         alt="${alt}"
         loading="lazy"
       />

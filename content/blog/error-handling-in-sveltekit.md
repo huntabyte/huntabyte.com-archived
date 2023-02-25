@@ -112,7 +112,7 @@ We now know that when an error occurs, SvelteKit will render the nearest error b
 
 For example, let's say that we have a standard layout that includes a navbar and a container for our page content.
 
-![Error Boundary](/images/error-boundary.png)
+{% img src="https://res.cloudinary.com/dgytdtcft/image/upload/v1677283513/error-boundary.png" alt="Diagram demonstrating an error boundary" %}
 
 If an error occurs within the page, our layout will remain in tact. So the purple box here is the error boundary.
 
